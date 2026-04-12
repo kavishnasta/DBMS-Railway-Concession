@@ -1,10 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-
 export default function Landing() {
-  const { isAuthenticated, user } = useAuth();
-
+  const { isAuthenticated, user }=useAuth();
   return (
     <div className="landing">
       <nav className="nav">
@@ -20,7 +18,7 @@ export default function Landing() {
             <a href="#how" className="nav-link">How it works</a>
             {isAuthenticated ? (
               <Link
-                to={user?.role === 'admin' ? '/admin/dashboard' : '/student/dashboard'}
+                to={user?.role==='admin' ? '/admin/dashboard' : '/student/dashboard'}
                 className="btn btn-ink"
               >
                 Dashboard
@@ -34,7 +32,6 @@ export default function Landing() {
           </div>
         </div>
       </nav>
-
       {/* ---- HERO ---- */}
       <section className="hero">
         <div className="container hero-center">
@@ -52,7 +49,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* ---- HOW IT WORKS ---- */}
       <section id="how" className="how">
         <div className="container">
@@ -76,7 +72,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

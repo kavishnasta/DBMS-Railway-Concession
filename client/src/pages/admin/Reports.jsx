@@ -3,16 +3,14 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import { adminAPI } from '../../services/api.js';
-
 export default function Reports() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
+  const [data, setData]=useState(null);
+  const [loading, setLoading]=useState(true);
+  const [error, setError]=useState('');
+  useEffect(()=>{
     async function fetchReports() {
       try {
-        const res = await adminAPI.getReports();
+        const res=await adminAPI.getReports();
         setData(res.data);
       } catch {
         setError('Failed to load reports.');
@@ -22,7 +20,6 @@ export default function Reports() {
     }
     fetchReports();
   }, []);
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -30,31 +27,25 @@ export default function Reports() {
       </div>
     );
   }
-
   if (error) {
     return <div className="alert alert-error">{error}</div>;
   }
-
-  const { concessions_by_month, popular_routes } = data;
-
-  const totalConcessions = popular_routes.reduce((sum, r) => sum + parseInt(r.student_count), 0);
-  const totalRailway = popular_routes.filter(r => r.transport_type === 'railway').reduce((sum, r) => sum + parseInt(r.student_count), 0);
-  const totalMetro = popular_routes.filter(r => r.transport_type === 'metro').reduce((sum, r) => sum + parseInt(r.student_count), 0);
-
-  const chartData = concessions_by_month.map(row => ({
+  const { concessions_by_month, popular_routes }=data;
+  const totalConcessions=popular_routes.reduce((sum, r)=>sum + parseInt(r.student_count), 0);
+  const totalRailway=popular_routes.filter(r=>r.transport_type==='railway').reduce((sum, r)=>sum + parseInt(r.student_count), 0);
+  const totalMetro=popular_routes.filter(r=>r.transport_type==='metro').reduce((sum, r)=>sum + parseInt(r.student_count), 0);
+  const chartData=concessions_by_month.map(row=>({
     month: row.month,
     Total: parseInt(row.total),
     Railway: parseInt(row.railway),
     Metro: parseInt(row.metro)
   }));
-
   return (
     <div>
       <div className="page-header">
         <h1>Reports & Analytics</h1>
         <p>Insights into concession usage and trends</p>
       </div>
-
       <div className="metrics-grid">
         <div className="metric-card">
           <div className="metric-tag mono">N&deg; 01</div>
@@ -81,7 +72,6 @@ export default function Reports() {
           <div className="metric-sub">Last 6 months</div>
         </div>
       </div>
-
       <div className="reports-grid">
         <div className="card card-full">
           <div className="card-header">
@@ -90,7 +80,7 @@ export default function Reports() {
               <div className="card-subtitle">Breakdown of railway vs metro concessions over the last 6 months</div>
             </div>
           </div>
-          {chartData.length === 0 ? (
+          {chartData.length===0 ? (
             <div className="empty-state">
               <div className="empty-state-text">No monthly data available yet.</div>
             </div>
@@ -112,7 +102,6 @@ export default function Reports() {
           )}
         </div>
       </div>
-
       <div className="card">
         <div className="card-header">
           <div>
@@ -120,8 +109,7 @@ export default function Reports() {
             <div className="card-subtitle">Top 10 routes by concession count</div>
           </div>
         </div>
-
-        {popular_routes.length === 0 ? (
+        {popular_routes.length===0 ? (
           <div className="empty-state">
             <div className="empty-state-text">No route data available yet.</div>
           </div>
@@ -138,7 +126,7 @@ export default function Reports() {
                 </tr>
               </thead>
               <tbody>
-                {popular_routes.map((route, index) => (
+                {popular_routes.map((route, index)=>(
                   <tr key={index}>
                     <td>
                       <div className="rank-number">{index + 1}</div>
@@ -150,7 +138,7 @@ export default function Reports() {
                     </td>
                     <td>
                       <span className={`badge badge-${route.transport_type}`}>
-                        {route.transport_type === 'railway' ? 'Railway' : 'Metro'}
+                        {route.transport_type==='railway' ? 'Railway' : 'Metro'}
                       </span>
                     </td>
                     <td><strong>{route.student_count}</strong></td>
