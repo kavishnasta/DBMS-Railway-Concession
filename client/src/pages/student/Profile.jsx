@@ -1,25 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { studentAPI } from '../../services/api.js';
-
 function formatDate(dateStr) {
   if (!dateStr) return 'N/A';
   return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
 }
-
 export default function Profile() {
-  const [profile, setProfile] = useState(null);
-  const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [uploadMsg, setUploadMsg] = useState('');
-  const [uploadErr, setUploadErr] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const fileRef = useRef();
-
-  useEffect(() => {
+  const [profile, setProfile]=useState(null);
+  const [documents, setDocuments]=useState([]);
+  const [loading, setLoading]=useState(true);
+  const [error, setError]=useState('');
+  const [uploadMsg, setUploadMsg]=useState('');
+  const [uploadErr, setUploadErr]=useState('');
+  const [uploading, setUploading]=useState(false);
+  const fileRef=useRef();
+  useEffect(()=>{
     async function fetchData() {
       try {
-        const [profileRes, docsRes] = await Promise.all([
+        const [profileRes, docsRes]=await Promise.all([
           studentAPI.getProfile(),
           studentAPI.getDocuments()
         ]);
@@ -33,31 +30,26 @@ export default function Profile() {
     }
     fetchData();
   }, []);
-
   async function handleAddressProofUpload(e) {
-    const file = e.target.files[0];
+    const file=e.target.files[0];
     if (!file) return;
-
     setUploadErr('');
     setUploadMsg('');
     setUploading(true);
-
-    const formData = new FormData();
+    const formData=new FormData();
     formData.append('address_proof', file);
-
     try {
-      const res = await studentAPI.updateAddressProof(formData);
+      const res=await studentAPI.updateAddressProof(formData);
       setUploadMsg(res.data.message);
-      const docsRes = await studentAPI.getDocuments();
+      const docsRes=await studentAPI.getDocuments();
       setDocuments(docsRes.data);
     } catch (err) {
-      setUploadErr(err.response?.data?.error || 'Upload failed.');
+      setUploadErr(err.response?.data?.error||'Upload failed.');
     } finally {
       setUploading(false);
-      if (fileRef.current) fileRef.current.value = '';
+      if (fileRef.current) fileRef.current.value='';
     }
   }
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -65,21 +57,17 @@ export default function Profile() {
       </div>
     );
   }
-
   if (error) {
     return <div className="alert alert-error">{error}</div>;
   }
-
-  const addressDoc = documents.find(d => d.document_type === 'address_proof');
-  const aadhaarDoc = documents.find(d => d.document_type === 'aadhaar');
-
+  const addressDoc=documents.find(d=>d.document_type==='address_proof');
+  const aadhaarDoc=documents.find(d=>d.document_type==='aadhaar');
   return (
     <div>
       <div className="page-header">
         <h1>My Profile</h1>
         <p>Your personal and academic information</p>
       </div>
-
       <div className="cards-grid">
         <div className="card">
           <div className="card-header">
@@ -107,7 +95,6 @@ export default function Profile() {
             </div>
           </div>
         </div>
-
         <div className="card">
           <div className="card-header">
             <div>
@@ -122,15 +109,14 @@ export default function Profile() {
             </div>
             <div className="profile-field">
               <span className="profile-field-label">Phone Number</span>
-              <span className="profile-field-value">{profile.phone || 'Not provided'}</span>
+              <span className="profile-field-value">{profile.phone||'Not provided'}</span>
             </div>
             <div className="profile-field">
               <span className="profile-field-label">Residential Address</span>
-              <span className="profile-field-value">{profile.address || 'Not provided'}</span>
+              <span className="profile-field-value">{profile.address||'Not provided'}</span>
             </div>
           </div>
         </div>
-
         <div className="card">
           <div className="card-header">
             <div>
@@ -141,12 +127,12 @@ export default function Profile() {
           <div className="profile-section">
             <div className="profile-field">
               <span className="profile-field-label">Aadhaar (Masked)</span>
-              <span className="profile-field-value">{profile.aadhaar_masked || 'Not provided'}</span>
+              <span className="profile-field-value">{profile.aadhaar_masked||'Not provided'}</span>
             </div>
             <div className="profile-field">
               <span className="profile-field-label">Account Status</span>
               <span className="profile-field-value">
-                <span className={`badge badge-${profile.status === 'active' ? 'active' : 'rejected'}`}>
+                <span className={`badge badge-${profile.status==='active' ? 'active' : 'rejected'}`}>
                   {profile.status}
                 </span>
               </span>
@@ -157,7 +143,6 @@ export default function Profile() {
             </div>
           </div>
         </div>
-
         <div className="card">
           <div className="card-header">
             <div>
@@ -170,7 +155,7 @@ export default function Profile() {
               <span className="profile-field-label">Aadhaar Card</span>
               <span className="profile-field-value">
                 {aadhaarDoc ? (
-                  <span className={`badge badge-${aadhaarDoc.verification_status === 'verified' ? 'active' : 'pending'}`}>
+                  <span className={`badge badge-${aadhaarDoc.verification_status==='verified' ? 'active' : 'pending'}`}>
                     {aadhaarDoc.verification_status}
                   </span>
                 ) : 'Not uploaded'}
@@ -181,7 +166,7 @@ export default function Profile() {
               <span className="profile-field-value">
                 {addressDoc ? (
                   <>
-                    <span className={`badge badge-${addressDoc.verification_status === 'verified' ? 'active' : 'pending'}`}>
+                    <span className={`badge badge-${addressDoc.verification_status==='verified' ? 'active' : 'pending'}`}>
                       {addressDoc.verification_status}
                     </span>
                     <span className="profile-doc-name">{addressDoc.file_name}</span>
@@ -189,10 +174,8 @@ export default function Profile() {
                 ) : 'Not uploaded'}
               </span>
             </div>
-
-            {uploadMsg && <div className="alert alert-success">{uploadMsg}</div>}
-            {uploadErr && <div className="alert alert-error">{uploadErr}</div>}
-
+            {uploadMsg&&<div className="alert alert-success">{uploadMsg}</div>}
+            {uploadErr&&<div className="alert alert-error">{uploadErr}</div>}
             <div className="profile-upload-section">
               <p className="form-hint">
                 Need to update your address proof? Upload a new document below.
@@ -202,7 +185,7 @@ export default function Profile() {
                 <button
                   type="button"
                   className="btn btn-ghost"
-                  onClick={() => fileRef.current?.click()}
+                  onClick={()=>fileRef.current?.click()}
                   disabled={uploading}
                 >
                   {uploading ? 'Uploading...' : 'Upload new address proof'}

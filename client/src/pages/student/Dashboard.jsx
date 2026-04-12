@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { studentAPI } from '../../services/api.js';
-
 function formatDate(dateStr) {
   if (!dateStr) return 'N/A';
   return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
-
 function StatusBadge({ status }) {
-  return <span className={`badge badge-${status || 'pending'}`}>{status || 'N/A'}</span>;
+  return <span className={`badge badge-${status||'pending'}`}>{status||'N/A'}</span>;
 }
-
 export default function Dashboard() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
+  const [data, setData]=useState(null);
+  const [loading, setLoading]=useState(true);
+  const [error, setError]=useState('');
+  useEffect(()=>{
     async function fetchDashboard() {
       try {
-        const res = await studentAPI.getDashboard();
+        const res=await studentAPI.getDashboard();
         setData(res.data);
       } catch (err) {
         setError('Failed to load dashboard data.');
@@ -29,7 +25,6 @@ export default function Dashboard() {
     }
     fetchDashboard();
   }, []);
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -37,20 +32,16 @@ export default function Dashboard() {
       </div>
     );
   }
-
   if (error) {
     return <div className="alert alert-error">{error}</div>;
   }
-
-  const { student, active_concession, total_renewals, next_expiry } = data;
-
+  const { student, active_concession, total_renewals, next_expiry }=data;
   return (
     <div>
       <div className="page-header">
         <h1>Welcome back, <strong style={{ color: '#1a2332' }}>{student.name}</strong></h1>
         <p className="greeting">Enrolment No: <strong>{student.enrolment_no}</strong> &bull; {student.course}, Year {student.year}</p>
       </div>
-
       <div className="metrics-grid">
         <div className="metric-card">
           <div className="metric-value">{active_concession ? active_concession.concession_type.charAt(0).toUpperCase() + active_concession.concession_type.slice(1) : 'None'}</div>
@@ -75,7 +66,6 @@ export default function Dashboard() {
           <div className="metric-sub">{next_expiry ? 'Upcoming expiration' : 'No active concession'}</div>
         </div>
       </div>
-
       {active_concession ? (
         <div className="concession-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -100,7 +90,7 @@ export default function Dashboard() {
             </div>
             <div>
               <div className="concession-card-label">Duration</div>
-              <div className="concession-card-value">{active_concession.duration === '1_month' ? 'Monthly' : 'Quarterly'}</div>
+              <div className="concession-card-value">{active_concession.duration==='1_month' ? 'Monthly' : 'Quarterly'}</div>
             </div>
             <div>
               <div className="concession-card-label">Issue Date</div>
@@ -129,7 +119,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-
       <div className="card">
         <div className="card-header">
           <div>

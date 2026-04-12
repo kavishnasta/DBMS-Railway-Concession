@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { adminAPI } from '../../services/api.js';
-
 function formatDate(dateStr) {
   if (!dateStr) return 'N/A';
   return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
-
 export default function AdminDashboard() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
+  const [data, setData]=useState(null);
+  const [loading, setLoading]=useState(true);
+  const [error, setError]=useState('');
   async function fetchDashboard() {
     setLoading(true);
     try {
-      const res = await adminAPI.getDashboard();
+      const res=await adminAPI.getDashboard();
       setData(res.data);
     } catch {
       setError('Failed to load dashboard data.');
@@ -22,11 +19,9 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
+  useEffect(()=>{
     fetchDashboard();
   }, []);
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -34,13 +29,10 @@ export default function AdminDashboard() {
       </div>
     );
   }
-
   if (error) {
     return <div className="alert alert-error">{error}</div>;
   }
-
-  const { metrics, recent_applications } = data;
-
+  const { metrics, recent_applications }=data;
   return (
     <div>
       <div className="page-header">
@@ -54,7 +46,6 @@ export default function AdminDashboard() {
           </button>
         </div>
       </div>
-
       <div className="metrics-grid">
         <div className="metric-card">
           <div className="metric-tag mono">N&deg; 01</div>
@@ -81,7 +72,6 @@ export default function AdminDashboard() {
           <div className="metric-sub">Registered students</div>
         </div>
       </div>
-
       <div className="card">
         <div className="card-header">
           <div>
@@ -89,8 +79,7 @@ export default function AdminDashboard() {
             <div className="card-subtitle">Last 10 concession applications</div>
           </div>
         </div>
-
-        {recent_applications.length === 0 ? (
+        {recent_applications.length===0 ? (
           <div className="empty-state">
             <div className="empty-state-text">No applications found.</div>
           </div>
@@ -108,13 +97,13 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {recent_applications.map(app => (
+                {recent_applications.map(app=>(
                   <tr key={app.concession_id}>
                     <td><strong>{app.name}</strong></td>
                     <td>{app.enrolment_no}</td>
                     <td>
                       <span className={`badge badge-${app.concession_type}`}>
-                        {app.concession_type === 'railway' ? 'Railway' : 'Metro'}
+                        {app.concession_type==='railway' ? 'Railway' : 'Metro'}
                       </span>
                     </td>
                     <td>{app.source_station} &rarr; {app.destination_station}</td>

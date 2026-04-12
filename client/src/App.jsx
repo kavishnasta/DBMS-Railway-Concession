@@ -14,7 +14,6 @@ import Profile from './pages/student/Profile.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 import VerifyApplications from './pages/admin/VerifyApplications.jsx';
 import Reports from './pages/admin/Reports.jsx';
-
 export default function App() {
   return (
     <AuthProvider>
