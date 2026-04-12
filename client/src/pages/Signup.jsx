@@ -16,12 +16,34 @@ export default function Signup() {
   const [files, setFiles]=useState({ aadhaar_doc: null, address_proof: null, college_id_doc: null });
   const [error, setError]=useState('');
   const [loading, setLoading]=useState(false);
+  const [hints, setHints] = useState({
+    enrolment_no: '', email: '', phone: '', aadhaar: '', password: '', confirm_password: ''
+  });
   const fileRefs={ aadhaar_doc: useRef(), address_proof: useRef(), college_id_doc: useRef() };
   const { login }=useAuth();
   const navigate=useNavigate();
+
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+
+    switch (name) {
+      case 'enrolment_no':     validateEnrolmentNo(value, h => setFieldHint('enrolment_no', h)); break;
+      case 'email':            validateEmail(value, h => setFieldHint('email', h)); break;
+      case 'phone':            validatePhone(value, h => setFieldHint('phone', h)); break;
+      case 'aadhaar':          validateAadhaar(value, h => setFieldHint('aadhaar', h)); break;
+      case 'password':
+        validatePassword(value, form.confirm_password, h => setFieldHint('password', h));
+        validateConfirmPassword(form.confirm_password, value, h => setFieldHint('confirm_password', h));
+        break;
+      case 'confirm_password': validateConfirmPassword(value, form.password, h => setFieldHint('confirm_password', h)); break;
+    }
   }
+
+  function setFieldHint(field, value) {
+    setHints(prev => ({ ...prev, [field]: value }));
+  }
+
   function handleFileChange(e, field) {
     const file=e.target.files[0]||null;
     setFiles((prev)=>({ ...prev, [field]: file }));
@@ -29,6 +51,99 @@ export default function Signup() {
   function removeFile(field) {
     setFiles((prev)=>({ ...prev, [field]: null }));
     if (fileRefs[field].current) fileRefs[field].current.value='';
+  }
+  // ─── Validation stubs ────────────────────────────────────────────────────────
+
+  function validateEnrolmentNo(value, setHints) {
+    // TODO: fill in
+    if(value.length === 0 ) {
+      setHints('')
+      return;
+    }
+    if (value.length != 9) {
+      setHints('Enrollment Number should be 9 digits long');
+    } else if (!(/^\d+$/.test(value))) {
+      setHints('Enrollment Number should contain digits only')
+    } else {
+      setHints('');
+    }
+  }
+
+  function validateEmail(value, setHints) {
+    if (value.length === 0) {
+      setHints('');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      setHints('Enter a valid email address');
+    } else if (!value.endsWith('@vjti.ac.in')) {
+      setHints('Must be a @vjti.ac.in email');
+    } else {
+      setHints('');
+    }
+}
+
+  function validatePhone(value, setHints) {
+    if (value.length === 0) {
+      setHints('');
+      return;
+    }
+    const digits = value.replace(/[\s\-\+]/g, '');
+    if (!/^\d+$/.test(digits)) {
+      setHints('Phone number can only contain digits');
+    } else if (digits.length !== 10) {
+      setHints('Must be 10 digits');
+    } else {
+      setHints('');
+    }
+}
+
+  function validateAadhaar(value, setHints) {
+    if (value.length === 0) {
+      setHints('');
+      return;
+    }
+    if (!/^\d+$/.test(value)) {
+      setHints('Aadhaar number should contain digits only');
+    } else if (value.length !== 12) {
+      setHints('Aadhaar number should be 12 digits long');
+    } else {
+      setHints('');
+    }
+}
+
+  function validatePassword(value, confirmValue, setHints) {
+  if (value.length === 0) {
+    setHints('');
+    return;
+  }
+  if (value.length < 8) {
+    setHints('Must be at least 8 characters');
+  } else if (!/[A-Z]/.test(value)) {
+    setHints('Must contain at least one uppercase letter');
+  } else if (!/[0-9]/.test(value)) {
+    setHints('Must contain at least one number');
+  } else {
+    setHints('');
+  }
+}
+
+  function validateConfirmPassword(value, passwordValue, setHints) {
+    if (value.length === 0) {
+      setHints('');
+      return;
+    }
+    if (value !== passwordValue) {
+      setHints('Passwords do not match');
+    } else {
+      setHints('');
+    }
+  }
+
+// ─────────────────────────────────────────────────────────────────────────────
+  function hintClass(hint) {
+    return hint ? 'hint error' : 'hint';
   }
   async function handleSubmit(e) {
     e.preventDefault();
@@ -98,6 +213,7 @@ export default function Signup() {
             <div className="form-group">
               <label className="form-label">Enrolment No. <sup>*</sup></label>
               <input type="text" name="enrolment_no" className="form-input" placeholder="221080045" value={form.enrolment_no} onChange={handleChange} required />
+              <div className={hintClass(hints.enrolment_no)}>{hints.enrolment_no}</div>
             </div>
           </div>
           <div className="form-row">
@@ -127,10 +243,12 @@ export default function Signup() {
             <div className="form-group">
               <label className="form-label">Email <sup>*</sup></label>
               <input type="email" name="email" className="form-input" placeholder="you@vjti.ac.in" value={form.email} onChange={handleChange} required />
+              <div className={hintClass(hints.email)}>{hints.email}</div>
             </div>
             <div className="form-group">
               <label className="form-label">Phone</label>
               <input type="tel" name="phone" className="form-input" placeholder="+91 98765 43210" value={form.phone} onChange={handleChange} />
+              <div className={hintClass(hints.phone)}>{hints.phone}</div>
             </div>
           </div>
           <div className="form-group">
@@ -140,6 +258,7 @@ export default function Signup() {
           <div className="form-group">
             <label className="form-label">Aadhaar Number</label>
             <input type="text" name="aadhaar" className="form-input" placeholder="12-digit Aadhaar number" value={form.aadhaar} onChange={handleChange} maxLength={12} />
+            <div className={hintClass(hints.aadhaar)}>{hints.aadhaar}</div>
             <div className="form-hint">Stored in masked format &mdash; only last 4 digits visible.</div>
           </div>
           <h3 className="form-section-title">Documents</h3>
@@ -184,10 +303,12 @@ export default function Signup() {
             <div className="form-group">
               <label className="form-label">Password <sup>*</sup></label>
               <input type="password" name="password" className="form-input" placeholder="Create a strong password" value={form.password} onChange={handleChange} required />
+              <div className={hintClass(hints.password)}>{hints.password}</div>
             </div>
             <div className="form-group">
               <label className="form-label">Confirm <sup>*</sup></label>
               <input type="password" name="confirm_password" className="form-input" placeholder="Re-enter password" value={form.confirm_password} onChange={handleChange} required />
+              <div className={hintClass(hints.confirm_password)}>{hints.confirm_password}</div>
             </div>
           </div>
           <button type="submit" className="btn btn-ink btn-lg btn-full" disabled={loading} style={{ marginTop: '1rem' }}>

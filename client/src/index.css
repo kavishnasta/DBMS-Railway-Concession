@@ -542,6 +542,19 @@ a { color: inherit; }
   margin-bottom: 0.35rem;
   margin-top: -0.5rem;
 }
+.hint {
+  font-size: 12px;
+  margin-top: 5px;
+  min-height: 16px;        /* prevents layout shift when message appears/disappears */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-tertiary); /* default muted state */
+  transition: color 0.15s ease;
+}
+.hint.error { color: #dc2626; }
+.hint.ok    { color: #16a34a; }
+
 .form-section-title {
   font-family: var(--serif);
   font-size: 1.1rem;
