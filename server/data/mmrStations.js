@@ -1,6 +1,6 @@
 /*
  * Mumbai Metropolitan Region (MMR) Suburban Railway & Metro Stations
- * ====================================================================
+ *====================================================================
  *
  * Source: Compiled from Western Railway, Central Railway, and Mumbai
  * Metro Rail Corporation public timetables. There is no free public
@@ -13,8 +13,7 @@
  *
  * Updates as of: 2026
  */
-
-const RAILWAY_LINES = {
+const RAILWAY_LINES={
   western: {
     label: 'Western Line',
     code: 'WR',
@@ -164,8 +163,7 @@ const RAILWAY_LINES = {
     ],
   },
 };
-
-const METRO_LINES = {
+const METRO_LINES={
   line1: {
     label: 'Metro Line 1',
     code: 'M1',
@@ -233,31 +231,27 @@ const METRO_LINES = {
     ],
   },
 };
-
 function uniqueSorted(stations) {
-  const seen = new Set();
-  const out = [];
+  const seen=new Set();
+  const out=[];
   for (const s of stations) {
     if (!seen.has(s.name)) {
       seen.add(s.name);
       out.push(s);
     }
   }
-  return out.sort((a, b) => a.name.localeCompare(b.name));
+  return out.sort((a, b)=>a.name.localeCompare(b.name));
 }
-
 function flatten(linesObj) {
-  const all = [];
+  const all=[];
   for (const key of Object.keys(linesObj)) {
     for (const s of linesObj[key].stations) all.push(s);
   }
   return uniqueSorted(all);
 }
-
-const RAILWAY_FLAT = flatten(RAILWAY_LINES);
-const METRO_FLAT = flatten(METRO_LINES);
-
-module.exports = {
+const RAILWAY_FLAT=flatten(RAILWAY_LINES);
+const METRO_FLAT=flatten(METRO_LINES);
+module.exports={
   RAILWAY_LINES,
   METRO_LINES,
   RAILWAY_FLAT,

@@ -1,11 +1,10 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
-const bcrypt = require('bcryptjs');
-const pool = require('../config/db');
-
+const bcrypt=require('bcryptjs');
+const pool=require('../config/db');
 async function seed() {
   try {
-    const passwordHash = await bcrypt.hash('Admin@123', 10);
-    const result = await pool.query(
+    const passwordHash=await bcrypt.hash('Admin@123', 10);
+    const result=await pool.query(
       `INSERT INTO admin (name, email, password_hash, role)
        VALUES ($1, $2, $3, $4)
        ON CONFLICT (email) DO NOTHING
@@ -23,5 +22,4 @@ async function seed() {
     process.exit(1);
   }
 }
-
 seed();

@@ -19,9 +19,7 @@
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html, body {
   background: var(--bg);
   color: var(--ink);
@@ -32,17 +30,13 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "cv11";
 }
-
 a { color: inherit; }
-
 .container {
   max-width: 1160px;
   margin: 0 auto;
   padding: 0 2rem;
 }
-
 .mono { font-family: var(--mono); }
-
 /* ============================================
    TYPOGRAPHY — DISPLAY
    ============================================ */
@@ -74,7 +68,6 @@ a { color: inherit; }
   font-weight: 300;
   color: var(--rust);
 }
-
 .lede {
   font-family: var(--serif);
   font-size: 1.15rem;
@@ -84,7 +77,6 @@ a { color: inherit; }
   max-width: 46ch;
   font-variation-settings: "opsz" 36;
 }
-
 /* ============================================
    SECTION HEADERS — numbered like a document
    ============================================ */
@@ -109,14 +101,12 @@ a { color: inherit; }
   height: 1px;
   background: var(--rule-strong);
 }
-
 /* nav logo image */
 .nav-logo {
   width: 36px;
   height: auto;
   flex-shrink: 0;
 }
-
 /* ============================================
    NAV
    ============================================ */
@@ -172,7 +162,6 @@ a { color: inherit; }
   position: relative;
 }
 .nav-link:hover { color: var(--ink); }
-
 /* ============================================
    BUTTONS
    ============================================ */
@@ -195,7 +184,6 @@ a { color: inherit; }
   line-height: 1;
 }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .btn-ink {
   background: var(--ink);
   color: var(--bg);
@@ -205,7 +193,6 @@ a { color: inherit; }
   background: var(--rust);
   border-color: var(--rust);
 }
-
 .btn-ghost {
   background: transparent;
   color: var(--ink);
@@ -215,7 +202,6 @@ a { color: inherit; }
   background: var(--ink);
   color: var(--bg);
 }
-
 .btn-cream {
   background: var(--bg);
   color: var(--ink);
@@ -225,7 +211,6 @@ a { color: inherit; }
   background: var(--paper);
   border-color: var(--paper);
 }
-
 .btn-primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .btn-primary:hover:not(:disabled) { background: var(--rust); border-color: var(--rust); }
 .btn-secondary {
@@ -242,11 +227,9 @@ a { color: inherit; }
 .btn-danger:hover:not(:disabled) { background: var(--rust-dark); }
 .btn-info { background: #3a5a7a; color: var(--paper); border-color: #3a5a7a; }
 .btn-info:hover:not(:disabled) { background: #294457; }
-
 .btn-lg { padding: 0.9rem 1.5rem; font-size: 0.85rem; }
 .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.75rem; }
 .btn-full { width: 100%; }
-
 /* ============================================
    HERO
    ============================================ */
@@ -277,9 +260,7 @@ a { color: inherit; }
   text-align: center;
   margin-bottom: 2rem;
 }
-
 /* (ticket card + rail divider removed for simplicity) */
-
 /* ============================================
    HOW IT WORKS
    ============================================ */
@@ -335,7 +316,6 @@ a { color: inherit; }
   border: 1px solid var(--rule);
   color: var(--ink-60);
 }
-
 /* ============================================
    ABOUT
    ============================================ */
@@ -389,7 +369,6 @@ a { color: inherit; }
   color: var(--ink);
   font-weight: 500;
 }
-
 /* ============================================
    CTA STRIP
    ============================================ */
@@ -407,7 +386,6 @@ a { color: inherit; }
 .cta-strip .display-sm { color: var(--bg); margin-bottom: 0.35rem; }
 .cta-strip .display-sm em { color: var(--rust); }
 .cta-strip p { color: rgba(242,237,225,0.6); font-size: 0.9rem; }
-
 /* ============================================
    FOOTER
    ============================================ */
@@ -463,7 +441,6 @@ a { color: inherit; }
   letter-spacing: 0.1em;
   color: var(--ink-40);
 }
-
 /* ============================================
    AUTH PAGE (Login / Signup — simple centered)
    ============================================ */
@@ -511,7 +488,6 @@ a { color: inherit; }
   transition: color 0.15s;
 }
 .auth-back:hover { color: var(--ink); }
-
 .auth-tabs {
   display: flex;
   gap: 0;
@@ -538,9 +514,7 @@ a { color: inherit; }
   color: var(--ink);
   border-bottom-color: var(--rust);
 }
-
 /* (editorial field-input styles removed — using standard form-input) */
-
 .auth-alt {
   text-align: center;
   margin-top: 0.5rem;
@@ -555,7 +529,6 @@ a { color: inherit; }
   padding-bottom: 1px;
 }
 .auth-alt a:hover { border-bottom-color: var(--rust); color: var(--rust); }
-
 /* Signup card — reuses auth-page for layout */
 .signup-card {
   background: var(--paper);
@@ -579,13 +552,11 @@ a { color: inherit; }
   border-top: 1px solid var(--rule);
 }
 .form-section-title:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
-
 .form-label sup {
   color: var(--rust);
   font-size: 0.75em;
   margin-left: 0.15em;
 }
-
 /* Document dropzone */
 .doc-dropzone {
   border: 1.5px dashed var(--rule-strong);
@@ -647,7 +618,6 @@ a { color: inherit; }
   font-weight: 600;
 }
 .doc-remove:hover { color: var(--rust-dark); text-decoration: underline; }
-
 /* ============================================
    SHARED FORMS (used inside app pages + signup)
    ============================================ */
@@ -695,7 +665,6 @@ a { color: inherit; }
   margin-top: 0.3rem;
   font-family: var(--mono);
 }
-
 /* ============================================
    ALERTS
    ============================================ */
@@ -711,7 +680,6 @@ a { color: inherit; }
 .alert-success { background: #e6ecd6; color: #3d4f26; border-left-color: var(--sage); }
 .alert-info { background: #dfe6ee; color: #1f2f42; border-left-color: #3a5a7a; }
 .alert-warning { background: #f5ead0; color: #6b4c12; border-left-color: #c28828; }
-
 .divider { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
 .divider span {
@@ -721,7 +689,6 @@ a { color: inherit; }
   letter-spacing: 0.1em;
   color: var(--ink-40);
 }
-
 .signup-link {
   text-align: center;
   margin-top: 1.5rem;
@@ -736,7 +703,6 @@ a { color: inherit; }
   padding-bottom: 1px;
 }
 .signup-link a:hover { border-bottom-color: var(--rust); color: var(--rust); }
-
 /* ============================================
    APP LAYOUT (sidebar + content)
    ============================================ */
@@ -747,7 +713,6 @@ a { color: inherit; }
   padding: 2.5rem 3rem;
   min-height: 100vh;
 }
-
 .sidebar {
   width: 260px;
   background: var(--ink);
@@ -871,7 +836,6 @@ a { color: inherit; }
   letter-spacing: -0.01em;
   margin-bottom: 0.1rem;
 }
-
 /* ============================================
    PAGE HEADERS
    ============================================ */
@@ -887,7 +851,6 @@ a { color: inherit; }
 .page-header p { color: var(--ink-60); margin-top: 0.35rem; font-size: 0.82rem; }
 .greeting { font-size: 0.8rem; color: var(--ink-60); font-weight: 400; }
 .greeting strong { color: var(--ink); }
-
 /* ============================================
    METRICS
    ============================================ */
@@ -939,7 +902,6 @@ a { color: inherit; }
   color: var(--ink-60);
   margin-top: 0.3rem;
 }
-
 /* ============================================
    CARDS
    ============================================ */
@@ -966,7 +928,6 @@ a { color: inherit; }
 }
 .card-subtitle { font-size: 0.78rem; color: var(--ink-60); margin-top: 0.2rem; }
 .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
-
 /* Concession pass on dashboard */
 .concession-card {
   background: #f0f4fa;
@@ -999,7 +960,6 @@ a { color: inherit; }
   padding-top: 1.5rem;
   border-top: 1px dashed #bccadd;
 }
-
 /* ============================================
    TABLES
    ============================================ */
@@ -1023,7 +983,6 @@ tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: var(--bg-deep); }
 tbody td { padding: 0.95rem 1rem; font-size: 0.88rem; color: var(--ink-60); }
 tbody td strong { color: var(--ink); font-weight: 600; }
-
 /* ============================================
    BADGES
    ============================================ */
@@ -1046,7 +1005,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
 .badge-approved { background: #e6ecd6; color: #3d4f26; border-color: #3d4f26; }
 .badge-railway { background: var(--paper); color: var(--rust-dark); border-color: var(--rust-dark); }
 .badge-metro { background: var(--paper); color: var(--ink); border-color: var(--ink); }
-
 /* ============================================
    FILTERS
    ============================================ */
@@ -1072,7 +1030,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
 .filter-select:focus,
 .search-input:focus { border-color: var(--ink); }
 .search-input { min-width: 220px; cursor: text; }
-
 /* ============================================
    PROFILE
    ============================================ */
@@ -1094,7 +1051,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   min-width: 170px;
 }
 .profile-field-value { font-size: 0.9rem; color: var(--ink); font-weight: 500; }
-
 /* ============================================
    APPLY FORM
    ============================================ */
@@ -1115,7 +1071,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
 }
 .radio-option.selected { border-color: var(--ink); background: var(--bg-deep); color: var(--ink); }
 .radio-option input { accent-color: var(--rust); }
-
 .verification-card {
   background: var(--bg-deep);
   border: 1px solid var(--rule-strong);
@@ -1128,9 +1083,7 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   padding: 0.4rem 0;
   font-size: 0.85rem;
 }
-
 .action-buttons { display: flex; gap: 0.5rem; }
-
 /* ============================================
    REPORTS
    ============================================ */
@@ -1153,7 +1106,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
 }
 .progress-bar-container { background: var(--bg-deep); border-radius: 0; height: 5px; margin-top: 4px; border: 1px solid var(--rule); }
 .progress-bar-fill { background: var(--ink); height: 3px; transition: width 0.5s ease; }
-
 /* ============================================
    MODAL
    ============================================ */
@@ -1203,7 +1155,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
 .modal-detail-value { color: var(--ink); font-weight: 500; }
 .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
 .modal-actions .btn { flex: 1; }
-
 /* ============================================
    LOADING / EMPTY
    ============================================ */
@@ -1217,11 +1168,9 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 .empty-state { text-align: center; padding: 3rem 1rem; color: var(--ink-40); }
 .empty-state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
 .empty-state-text { font-size: 0.9rem; font-family: var(--serif); font-style: italic; }
-
 /* ============================================
    RESPONSIVE
    ============================================ */
@@ -1235,7 +1184,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
   .cta-inner { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
 }
-
 @media (max-width: 768px) {
   .container { padding: 0 1.25rem; }
   .hero { padding: 3.5rem 0 3rem; }
@@ -1252,7 +1200,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   .nav-right .nav-link { display: none; }
   .auth-card, .signup-card { padding: 2rem 1.5rem; }
 }
-
 /* ============================================
    SCROLLBAR
    ============================================ */
@@ -1260,9 +1207,7 @@ tbody td strong { color: var(--ink); font-weight: 600; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--ink-20); border: 2px solid var(--bg); border-radius: 0; }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-40); }
-
 ::selection { background: var(--rust); color: var(--paper); }
-
 /* ============================================
    PAGE-LEVEL HELPERS (post-emoji strip)
    ============================================ */
@@ -1272,7 +1217,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   align-items: flex-start;
   gap: 1rem;
 }
-
 .metric-tag {
   font-size: 0.65rem;
   letter-spacing: 0.12em;
@@ -1280,7 +1224,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   text-transform: uppercase;
   margin-bottom: 0.8rem;
 }
-
 .verification-mark {
   font-size: 1.1rem;
   color: #3d4f26;
@@ -1292,7 +1235,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   color: var(--ink-60);
   margin-top: 0.25rem;
 }
-
 .filters-count {
   font-size: 0.78rem;
   color: var(--ink-60);
@@ -1300,7 +1242,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   font-family: var(--mono);
   letter-spacing: 0.04em;
 }
-
 .row-sub {
   font-size: 0.78rem;
   color: var(--ink-60);
@@ -1312,7 +1253,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   margin-top: 0.1rem;
   font-style: italic;
 }
-
 .row-action-stack {
   display: flex;
   flex-direction: column;
@@ -1328,7 +1268,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   gap: 0.3rem;
   flex-wrap: wrap;
 }
-
 .modal-detail-doc { align-items: center; }
 .modal-detail-label-cap { text-transform: capitalize; }
 .modal-detail-doc-value {
@@ -1345,9 +1284,7 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   font-weight: 500;
 }
 .modal-doc-link:hover { color: var(--ink); }
-
 .card-full { grid-column: 1 / -1; }
-
 .route-arrow {
   color: var(--ink-40);
   margin: 0 0.4rem;
@@ -1365,7 +1302,6 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   min-width: 44px;
   text-align: right;
 }
-
 /* profile doc name + upload */
 .profile-doc-name {
   font-size: 0.78rem;

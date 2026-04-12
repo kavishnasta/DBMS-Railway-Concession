@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { adminAPI } from '../../services/api.js';
-
 function formatDate(dateStr) {
   if (!dateStr) return 'N/A';
   return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
-
 function DetailModal({ concessionId, onClose, onAction }) {
-  const [detail, setDetail] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [remarks, setRemarks] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
+  const [detail, setDetail]=useState(null);
+  const [loading, setLoading]=useState(true);
+  const [actionLoading, setActionLoading]=useState(false);
+  const [remarks, setRemarks]=useState('');
+  const [error, setError]=useState('');
+  useEffect(()=>{
     async function fetchDetail() {
       try {
-        const res = await adminAPI.getApplicationDetail(concessionId);
+        const res=await adminAPI.getApplicationDetail(concessionId);
         setDetail(res.data);
       } catch {
         setError('Failed to load application details.');
@@ -26,7 +23,6 @@ function DetailModal({ concessionId, onClose, onAction }) {
     }
     fetchDetail();
   }, [concessionId]);
-
   async function handleAction(action) {
     setActionLoading(true);
     setError('');
@@ -35,25 +31,23 @@ function DetailModal({ concessionId, onClose, onAction }) {
       onAction();
       onClose();
     } catch (err) {
-      setError(err.response?.data?.error || 'Action failed.');
+      setError(err.response?.data?.error||'Action failed.');
     } finally {
       setActionLoading(false);
     }
   }
-
   return (
-    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="modal-overlay" onClick={(e)=>e.target===e.currentTarget&&onClose()}>
       <div className="modal">
         <div className="modal-header">
           <span className="modal-title">Application Details #{concessionId}</span>
           <button className="modal-close" onClick={onClose}>&times;</button>
         </div>
-
         {loading ? (
           <div className="loading-container">
             <div className="loading-spinner"></div>
           </div>
-        ) : error && !detail ? (
+        ) : error&&!detail ? (
           <div className="alert alert-error">{error}</div>
         ) : detail ? (
           <>
@@ -80,7 +74,6 @@ function DetailModal({ concessionId, onClose, onAction }) {
                 <span className="modal-detail-value">{detail.concession.college_id}</span>
               </div>
             </div>
-
             <div className="modal-section">
               <div className="modal-section-title">Concession Details</div>
               <div className="modal-detail">
@@ -97,7 +90,7 @@ function DetailModal({ concessionId, onClose, onAction }) {
               </div>
               <div className="modal-detail">
                 <span className="modal-detail-label">Duration</span>
-                <span className="modal-detail-value">{detail.concession.duration === '1_month' ? 'Monthly' : 'Quarterly'}</span>
+                <span className="modal-detail-value">{detail.concession.duration==='1_month' ? 'Monthly' : 'Quarterly'}</span>
               </div>
               <div className="modal-detail">
                 <span className="modal-detail-label">Issue Date</span>
@@ -114,17 +107,16 @@ function DetailModal({ concessionId, onClose, onAction }) {
                 </span>
               </div>
             </div>
-
-            {detail.student_documents && detail.student_documents.length > 0 && (
+            {detail.student_documents&&detail.student_documents.length > 0&&(
               <div className="modal-section">
                 <div className="modal-section-title">Registration Documents</div>
-                {detail.student_documents.map(doc => (
+                {detail.student_documents.map(doc=>(
                   <div key={doc.doc_id} className="modal-detail modal-detail-doc">
                     <span className="modal-detail-label modal-detail-label-cap">
                       {doc.document_type.replace(/_/g, ' ')}
                     </span>
                     <span className="modal-detail-value modal-detail-doc-value">
-                      <span className={`badge badge-${doc.verification_status === 'verified' ? 'active' : doc.verification_status === 'failed' ? 'rejected' : 'pending'}`}>
+                      <span className={`badge badge-${doc.verification_status==='verified' ? 'active' : doc.verification_status==='failed' ? 'rejected' : 'pending'}`}>
                         {doc.verification_status}
                       </span>
                       <a
@@ -141,15 +133,14 @@ function DetailModal({ concessionId, onClose, onAction }) {
                 ))}
               </div>
             )}
-
-            {detail.documents && detail.documents.length > 0 && (
+            {detail.documents&&detail.documents.length > 0&&(
               <div className="modal-section">
                 <div className="modal-section-title">Concession Documents</div>
-                {detail.documents.map(doc => (
+                {detail.documents.map(doc=>(
                   <div key={doc.document_id} className="modal-detail">
-                    <span className="modal-detail-label">{doc.document_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
+                    <span className="modal-detail-label">{doc.document_type.replace(/_/g, ' ').replace(/\b\w/g, c=>c.toUpperCase())}</span>
                     <span className="modal-detail-value">
-                      <span className={`badge badge-${doc.verification_status === 'verified' ? 'active' : doc.verification_status === 'failed' ? 'rejected' : 'pending'}`}>
+                      <span className={`badge badge-${doc.verification_status==='verified' ? 'active' : doc.verification_status==='failed' ? 'rejected' : 'pending'}`}>
                         {doc.verification_status}
                       </span>
                     </span>
@@ -157,25 +148,24 @@ function DetailModal({ concessionId, onClose, onAction }) {
                 ))}
               </div>
             )}
-
-            {detail.approval && (
+            {detail.approval&&(
               <div className="modal-section">
                 <div className="modal-section-title">Approval Status</div>
                 <div className="modal-detail">
                   <span className="modal-detail-label">Action</span>
                   <span className="modal-detail-value">
-                    <span className={`badge badge-${detail.approval.action === 'approved' ? 'active' : detail.approval.action === 'rejected' ? 'rejected' : 'pending'}`}>
+                    <span className={`badge badge-${detail.approval.action==='approved' ? 'active' : detail.approval.action==='rejected' ? 'rejected' : 'pending'}`}>
                       {detail.approval.action}
                     </span>
                   </span>
                 </div>
-                {detail.approval.remarks && (
+                {detail.approval.remarks&&(
                   <div className="modal-detail">
                     <span className="modal-detail-label">Remarks</span>
                     <span className="modal-detail-value">{detail.approval.remarks}</span>
                   </div>
                 )}
-                {detail.approval.approved_by_name && (
+                {detail.approval.approved_by_name&&(
                   <div className="modal-detail">
                     <span className="modal-detail-label">Processed By</span>
                     <span className="modal-detail-value">{detail.approval.approved_by_name}</span>
@@ -183,30 +173,29 @@ function DetailModal({ concessionId, onClose, onAction }) {
                 )}
               </div>
             )}
-
-            {detail.concession.status === 'pending' && (
+            {detail.concession.status==='pending'&&(
               <>
-                {error && <div className="alert alert-error">{error}</div>}
+                {error&&<div className="alert alert-error">{error}</div>}
                 <div className="form-group">
                   <label className="form-label">Remarks</label>
                   <textarea
                     className="form-textarea"
                     placeholder="Add remarks (optional)"
                     value={remarks}
-                    onChange={(e) => setRemarks(e.target.value)}
+                    onChange={(e)=>setRemarks(e.target.value)}
                   />
                 </div>
                 <div className="modal-actions">
                   <button
                     className="btn btn-ink"
-                    onClick={() => handleAction('approved')}
+                    onClick={()=>handleAction('approved')}
                     disabled={actionLoading}
                   >
                     {actionLoading ? 'Processing...' : 'Approve'}
                   </button>
                   <button
                     className="btn btn-ghost"
-                    onClick={() => handleAction('rejected')}
+                    onClick={()=>handleAction('rejected')}
                     disabled={actionLoading}
                   >
                     {actionLoading ? 'Processing...' : 'Reject'}
@@ -220,20 +209,18 @@ function DetailModal({ concessionId, onClose, onAction }) {
     </div>
   );
 }
-
 export default function VerifyApplications() {
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [selectedId, setSelectedId] = useState(null);
-  const [actionRemarks, setActionRemarks] = useState({});
-  const [actionLoading, setActionLoading] = useState({});
-  const [successMsg, setSuccessMsg] = useState('');
-
+  const [applications, setApplications]=useState([]);
+  const [loading, setLoading]=useState(true);
+  const [error, setError]=useState('');
+  const [selectedId, setSelectedId]=useState(null);
+  const [actionRemarks, setActionRemarks]=useState({});
+  const [actionLoading, setActionLoading]=useState({});
+  const [successMsg, setSuccessMsg]=useState('');
   async function fetchApplications() {
     setLoading(true);
     try {
-      const res = await adminAPI.getPendingApplications();
+      const res=await adminAPI.getPendingApplications();
       setApplications(res.data);
     } catch {
       setError('Failed to load pending applications.');
@@ -241,31 +228,27 @@ export default function VerifyApplications() {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
+  useEffect(()=>{
     fetchApplications();
   }, []);
-
   async function handleAction(id, action) {
-    setActionLoading(prev => ({ ...prev, [id]: true }));
+    setActionLoading(prev=>({ ...prev, [id]: true }));
     setError('');
     setSuccessMsg('');
     try {
-      const res = await adminAPI.takeAction(id, { action, remarks: actionRemarks[id] || '' });
+      const res=await adminAPI.takeAction(id, { action, remarks: actionRemarks[id]||'' });
       setSuccessMsg(res.data.message);
       fetchApplications();
     } catch (err) {
-      setError(err.response?.data?.error || 'Action failed.');
+      setError(err.response?.data?.error||'Action failed.');
     } finally {
-      setActionLoading(prev => ({ ...prev, [id]: false }));
+      setActionLoading(prev=>({ ...prev, [id]: false }));
     }
   }
-
   function formatDate(dateStr) {
     if (!dateStr) return 'N/A';
     return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   }
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -273,7 +256,6 @@ export default function VerifyApplications() {
       </div>
     );
   }
-
   return (
     <div>
       <div className="page-header">
@@ -287,12 +269,10 @@ export default function VerifyApplications() {
           </button>
         </div>
       </div>
-
-      {error && <div className="alert alert-error">{error}</div>}
-      {successMsg && <div className="alert alert-success">{successMsg}</div>}
-
+      {error&&<div className="alert alert-error">{error}</div>}
+      {successMsg&&<div className="alert alert-success">{successMsg}</div>}
       <div className="card">
-        {applications.length === 0 ? (
+        {applications.length===0 ? (
           <div className="empty-state">
             <div className="empty-state-text">No pending applications. All caught up.</div>
           </div>
@@ -312,7 +292,7 @@ export default function VerifyApplications() {
                 </tr>
               </thead>
               <tbody>
-                {applications.map(app => (
+                {applications.map(app=>(
                   <tr key={app.concession_id}>
                     <td>
                       <strong>{app.name}</strong>
@@ -324,10 +304,10 @@ export default function VerifyApplications() {
                       <div className="row-sub">&rarr; {app.destination_station}</div>
                       <div className="row-sub-fine">{app.travel_class} class</div>
                     </td>
-                    <td>{app.duration === '1_month' ? 'Monthly' : 'Quarterly'}</td>
+                    <td>{app.duration==='1_month' ? 'Monthly' : 'Quarterly'}</td>
                     <td>
                       <span className={`badge badge-${app.transport_type}`}>
-                        {app.transport_type === 'railway' ? 'Railway' : 'Metro'}
+                        {app.transport_type==='railway' ? 'Railway' : 'Metro'}
                       </span>
                     </td>
                     <td>{formatDate(app.created_at)}</td>
@@ -338,27 +318,27 @@ export default function VerifyApplications() {
                           type="text"
                           className="form-input row-remarks"
                           placeholder="Remarks..."
-                          value={actionRemarks[app.concession_id] || ''}
-                          onChange={(e) => setActionRemarks(prev => ({ ...prev, [app.concession_id]: e.target.value }))}
+                          value={actionRemarks[app.concession_id]||''}
+                          onChange={(e)=>setActionRemarks(prev=>({ ...prev, [app.concession_id]: e.target.value }))}
                         />
                         <div className="action-buttons">
                           <button
                             className="btn btn-ink btn-sm"
-                            onClick={() => handleAction(app.concession_id, 'approved')}
+                            onClick={()=>handleAction(app.concession_id, 'approved')}
                             disabled={actionLoading[app.concession_id]}
                           >
                             Approve
                           </button>
                           <button
                             className="btn btn-ghost btn-sm"
-                            onClick={() => handleAction(app.concession_id, 'rejected')}
+                            onClick={()=>handleAction(app.concession_id, 'rejected')}
                             disabled={actionLoading[app.concession_id]}
                           >
                             Reject
                           </button>
                           <button
                             className="btn btn-ghost btn-sm"
-                            onClick={() => setSelectedId(app.concession_id)}
+                            onClick={()=>setSelectedId(app.concession_id)}
                           >
                             View
                           </button>
@@ -372,12 +352,11 @@ export default function VerifyApplications() {
           </div>
         )}
       </div>
-
-      {selectedId && (
+      {selectedId&&(
         <DetailModal
           concessionId={selectedId}
-          onClose={() => setSelectedId(null)}
-          onAction={() => { fetchApplications(); setSuccessMsg('Action taken successfully.'); }}
+          onClose={()=>setSelectedId(null)}
+          onAction={()=>{ fetchApplications(); setSuccessMsg('Action taken successfully.'); }}
         />
       )}
     </div>
