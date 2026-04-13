@@ -32,12 +32,12 @@ router.post('/apply', verifyStudent, async (req, res)=>{
     }
     const activeConcession=await client.query(
       `SELECT concession_id FROM concession
-       WHERE student_id=$1 AND route_id=$2 AND status='active'`,
-      [req.user.id, routeId]
+       WHERE student_id=$1 AND status IN ('active','pending')`,
+      [req.user.id]
     );
-    if (activeConcession.rows.length > 0) {
+    if (activeConcession.rows.length>0) {
       await client.query('ROLLBACK');
-      return res.status(409).json({ error: 'An active concession already exists for this route' });
+      return res.status(409).json({ error: 'You already have an active or pending concession. You cannot hold more than one at a time.' });
     }
     const issueDate=new Date();
     const expiryDate=new Date(issueDate);
