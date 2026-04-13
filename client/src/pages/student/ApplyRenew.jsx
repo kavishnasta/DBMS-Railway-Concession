@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { concessionAPI } from '../../services/api.js';
 // Allowed source stations and which railway line they belong to
+// key is unique; name is the actual station name sent to the API
 const SOURCE_STATIONS=[
-  { name: 'Dadar',        line: 'central',  display: 'Dadar (Central Line)' },
-  { name: 'Matunga',      line: 'central',  display: 'Matunga (Central Line)' },
-  { name: 'Wadala Road',  line: 'harbour',  display: 'Wadala Road (Harbour Line)' },
-  { name: "King\u2019s Circle", line: 'harbour', display: "King\u2019s Circle (Harbour Line)" },
+  { key: 'Dadar-western', name: 'Dadar', line: 'western', display: 'Dadar (Western Line)' },
+  { key: 'Dadar-central', name: 'Dadar', line: 'central', display: 'Dadar (Central Line)' },
+  { key: 'Matunga',       name: 'Matunga',      line: 'central',  display: 'Matunga (Central Line)' },
+  { key: 'Wadala Road',   name: 'Wadala Road',  line: 'harbour',  display: 'Wadala Road (Harbour Line)' },
+  { key: "King\u2019s Circle", name: "King\u2019s Circle", line: 'harbour', display: "King\u2019s Circle (Harbour Line)" },
 ];
 export default function ApplyRenew() {
   const [stations, setStations]=useState({ railway: {}, metro: {} });
   const [form, setForm]=useState({
     transport_type: 'railway',
+    source_key: '',
     source_station: '',
     destination_station: '',
     travel_class: 'second',
@@ -33,10 +36,10 @@ export default function ApplyRenew() {
     }
     fetchStations();
   }, []);
-  // Determine which line the selected source station is on
+  // Determine which entry the selected source key corresponds to
   const selectedSourceMeta=useMemo(()=>{
-    return SOURCE_STATIONS.find(s=>s.name===form.source_station)||null;
-  }, [form.source_station]);
+    return SOURCE_STATIONS.find(s=>s.key===form.source_key)||null;
+  }, [form.source_key]);
   // Destination options: all stations on the source's line, excluding the source itself
   const destinationStations=useMemo(()=>{
     if (!selectedSourceMeta) return [];
@@ -44,8 +47,9 @@ export default function ApplyRenew() {
     if (!lineObj) return [];
     return lineObj.stations.filter(s=>s.name!==form.source_station);
   }, [stations, selectedSourceMeta, form.source_station]);
-  function handleSourceChange(sourceName) {
-    setForm({ ...form, source_station: sourceName, destination_station: '' });
+  function handleSourceChange(key) {
+    const meta=SOURCE_STATIONS.find(s=>s.key===key)||null;
+    setForm({ ...form, source_key: key, source_station: meta ? meta.name : '', destination_station: '' });
   }
   function handleDurationChange(dur) {
     setForm({ ...form, duration: dur });
@@ -64,6 +68,7 @@ export default function ApplyRenew() {
       setSuccess(`${res.data.message} (Concession ID: #${res.data.concession_id})`);
       setForm({
         transport_type: 'railway',
+        source_key: '',
         source_station: '',
         destination_station: '',
         travel_class: 'second',
@@ -100,13 +105,13 @@ export default function ApplyRenew() {
               <label className="form-label">Source Station *</label>
               <select
                 className="form-select"
-                value={form.source_station}
+                value={form.source_key}
                 onChange={(e)=>handleSourceChange(e.target.value)}
                 required
               >
                 <option value="">Select source station</option>
                 {SOURCE_STATIONS.map((s)=>(
-                  <option key={s.name} value={s.name}>{s.display}</option>
+                  <option key={s.key} value={s.key}>{s.display}</option>
                 ))}
               </select>
             </div>
