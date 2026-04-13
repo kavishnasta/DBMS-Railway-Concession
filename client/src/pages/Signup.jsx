@@ -77,7 +77,7 @@ export default function Signup() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
       setHints('Enter a valid email address');
-    } else if (!value.endsWith('@vjti.ac.in')) {
+    } else if (!value.endsWith('.vjti.ac.in')) {
       setHints('Must be a @vjti.ac.in email');
     } else {
       setHints('');
