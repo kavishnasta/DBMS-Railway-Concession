@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ER Diagram — Railway Concession Portal · VJTI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #f1f5f9;
+      letter-spacing: -0.02em;
+    }
+    .page-header p {
+      color: #64748b;
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+    }
+    .badge-pill {
+      display: inline-block;
+      background: #1e3a5f;
+      color: #93c5fd;
+      border: 1px solid #2563eb44;
+      border-radius: 9999px;
+      padding: 0.2rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 0.6rem;
+    }
+
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    .canvas-wrapper {
+      overflow-x: auto;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .er-canvas {
+      position: relative;
+      width: 1600px;
+      height: 980px;
+      margin: 0 auto;
+    }
+
+    svg.connections {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .er-table {
+      position: absolute;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+      min-width: 220px;
+    }
+
+    .er-table-header {
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .er-table-body { background: #1e293b; }
+
+    .er-field {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      padding: 0.38rem 1rem;
+      font-size: 0.775rem;
+      border-top: 1px solid #334155;
+      align-items: center;
+    }
+    .er-field:hover { background: #263548; }
+
+    .field-left { display: flex; align-items: center; gap: 0.4rem; }
+    .field-name { color: #e2e8f0; font-weight: 500; }
+    .field-name.pk { color: #fbbf24; font-weight: 700; }
+    .field-name.fk { color: #34d399; }
+    .field-name.uk { color: #a78bfa; }
+
+    .field-type {
+      font-size: 0.68rem;
+      color: #475569;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      text-align: right;
+    }
+
+    .field-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .badge-pk  { background: #78350f; color: #fbbf24; }
+    .badge-fk  { background: #064e3b; color: #34d399; }
+    .badge-uk  { background: #312e81; color: #a78bfa; }
+    .badge-nn  { background: #1e3a5f; color: #60a5fa; }
+    .badge-chk { background: #4a1942; color: #f0abfc; }
+
+    .constraint-row {
+      padding: 0.3rem 1rem;
+      font-size: 0.68rem;
+      color: #475569;
+      border-top: 1px dashed #1e293b;
+      font-style: italic;
+      background: #162032;
+    }
+
+    .table-student  .er-table-header { background: linear-gradient(90deg, #1d4ed8, #2563eb); color: white; }
+    .table-admin    .er-table-header { background: linear-gradient(90deg, #7c3aed, #8b5cf6); color: white; }
+    .table-route    .er-table-header { background: linear-gradient(90deg, #0891b2, #06b6d4); color: white; }
+    .table-concession .er-table-header { background: linear-gradient(90deg, #b45309, #d97706); color: white; }
+    .table-document .er-table-header { background: linear-gradient(90deg, #15803d, #16a34a); color: white; }
+    .table-approval .er-table-header { background: linear-gradient(90deg, #b91c1c, #dc2626); color: white; }
+    .table-student-doc .er-table-header { background: linear-gradient(90deg, #0e7490, #0891b2); color: white; }
+
+    .rel-label {
+      position: absolute;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #64748b;
+      background: #0f172a;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      pointer-events: none;
+      letter-spacing: 0.05em;
+    }
+
+    .cardinality-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-top: 2rem;
+    }
+    .cardinality-box h3 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+    .rel-table { width: 100%; border-collapse: collapse; }
+    .rel-table th {
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid #334155;
+    }
+    .rel-table td {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      border-bottom: 1px solid #1e293b;
+    }
+    .rel-table td strong { color: #e2e8f0; }
+    .rel-type { color: #fbbf24; font-family: monospace; font-weight: 700; }
+
+    .dbms-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .dbms-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .dbms-card h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+    .dbms-card ul {
+      list-style: none;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      line-height: 1.7;
+    }
+    .dbms-card ul li::before { content: '→ '; color: #475569; }
+
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.75rem;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Entity-Relationship Diagram</h1>
+  <p>Digital Concession Management Portal · VJTI Mumbai</p>
+  <span class="badge-pill">PostgreSQL · 7 Tables · Fully Normalized (3NF)</span>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div> Primary Key (PK)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div> Foreign Key (FK)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div> Unique Key (UK)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div> NOT NULL</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f0abfc"></div> CHECK Constraint</div>
+  <div class="legend-item">
+    <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,2"/></svg>
+    One-to-Many
+  </div>
+  <div class="legend-item">
+    <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#f59e0b" stroke-width="2"/></svg>
+    One-to-One
+  </div>
+</div>
+
+<div class="canvas-wrapper">
+  <div class="er-canvas">
+
+    <!-- SVG CONNECTOR LINES -->
+    <svg class="connections">
+      <defs>
+        <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#3b82f6" />
+        </marker>
+        <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b" />
+        </marker>
+        <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#34d399" />
+        </marker>
+        <marker id="crow-blue" markerWidth="12" markerHeight="12" refX="2" refY="6" orient="auto">
+          <path d="M2,2 L10,6 L2,10" stroke="#3b82f6" stroke-width="1.5" fill="none"/>
+          <line x1="0" y1="2" x2="0" y2="10" stroke="#3b82f6" stroke-width="1.5"/>
+        </marker>
+      </defs>
+
+      <!-- STUDENT → CONCESSION  (1:M) right of student header → left of concession -->
+      <path d="M 285,155 C 350,155 370,360 440,360"
+            stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,3" fill="none"
+            marker-end="url(#crow-blue)" />
+
+      <!-- ROUTE → CONCESSION (1:M) right of route → top of concession -->
+      <path d="M 990,205 C 1060,205 1060,310 760,320 C 680,322 640,340 620,350"
+            stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,3" fill="none"
+            marker-end="url(#crow-blue)" />
+
+      <!-- CONCESSION → DOCUMENT (1:M) bottom of concession → top of document -->
+      <path d="M 530,430 L 530,560"
+            stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,3" fill="none"
+            marker-end="url(#crow-blue)" />
+
+      <!-- CONCESSION → APPROVAL (1:1) right of concession → left of approval -->
+      <path d="M 620,380 C 700,380 730,510 750,530"
+            stroke="#f59e0b" stroke-width="2" fill="none"
+            marker-end="url(#arrow-amber)" />
+
+      <!-- ADMIN → APPROVAL (1:M) left of admin → right of approval -->
+      <path d="M 1085,470 C 1010,470 970,555 950,555"
+            stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,3" fill="none"
+            marker-end="url(#crow-blue)" />
+
+      <!-- ADMIN → DOCUMENT (1:M) left of admin → right of document -->
+      <path d="M 1085,440 C 1030,440 900,630 770,635"
+            stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,3" fill="none"
+            marker-end="url(#crow-blue)" />
+
+      <!-- STUDENT → STUDENT_DOCUMENT (1:M) bottom of student → top of student_doc -->
+      <path d="M 145,270 L 145,700"
+            stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,3" fill="none"
+            marker-end="url(#crow-blue)" />
+
+      <!-- Cardinality labels -->
+      <text x="290" y="248" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">1</text>
+      <text x="415" y="345" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">N</text>
+      <text x="993" y="198" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">1</text>
+      <text x="598" y="345" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">N</text>
+      <text x="535" y="450" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">1</text>
+      <text x="535" y="553" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">N</text>
+      <text x="628" y="375" font-size="10" fill="#f59e0b" font-family="monospace" font-weight="700">1</text>
+      <text x="748" y="525" font-size="10" fill="#f59e0b" font-family="monospace" font-weight="700">1</text>
+      <text x="1082" y="465" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">1</text>
+      <text x="953" y="550" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">N</text>
+      <text x="150" y="290" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">1</text>
+      <text x="150" y="694" font-size="10" fill="#64748b" font-family="monospace" font-weight="700">N</text>
+    </svg>
+
+
+    <!-- TABLE: STUDENT -->
+    <div class="er-table table-student" style="left:20px; top:60px; width:270px;">
+      <div class="er-table-header">👤 STUDENT</div>
+      <div class="er-table-body">
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-pk">PK</span>
+            <span class="field-name pk">student_id</span>
+          </div>
+          <span class="field-type">SERIAL</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">name</span>
+          </div>
+          <span class="field-type">VARCHAR(100)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-uk">UK</span>
+            <span class="field-name uk">enrolment_no</span>
+          </div>
+          <span class="field-type">VARCHAR(20)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">course</span>
+          </div>
+          <span class="field-type">VARCHAR(50)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">year</span>
+          </div>
+          <span class="field-type">SMALLINT</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">college_id</span>
+          </div>
+          <span class="field-type">VARCHAR(10)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-uk">UK</span>
+            <span class="field-name uk">email</span>
+          </div>
+          <span class="field-type">VARCHAR(255)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">phone</span>
+          </div>
+          <span class="field-type">VARCHAR(15)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">address</span>
+          </div>
+          <span class="field-type">TEXT</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">aadhaar_masked</span>
+          </div>
+          <span class="field-type">VARCHAR(20)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">password_hash</span>
+          </div>
+          <span class="field-type">VARCHAR(255)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">status</span>
+          </div>
+          <span class="field-type">VARCHAR(10)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">created_at</span>
+          </div>
+          <span class="field-type">TIMESTAMP</span>
+        </div>
+        <div class="constraint-row">CHK: year ∈ [1,4] · status ∈ {active, inactive}</div>
+      </div>
+    </div>
+
+
+    <!-- TABLE: ADMIN -->
+    <div class="er-table table-admin" style="left:1085px; top:360px; width:255px;">
+      <div class="er-table-header">🔐 ADMIN</div>
+      <div class="er-table-body">
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-pk">PK</span>
+            <span class="field-name pk">admin_id</span>
+          </div>
+          <span class="field-type">SERIAL</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">name</span>
+          </div>
+          <span class="field-type">VARCHAR(100)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-uk">UK</span>
+            <span class="field-name uk">email</span>
+          </div>
+          <span class="field-type">VARCHAR(255)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">password_hash</span>
+          </div>
+          <span class="field-type">VARCHAR(255)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">role</span>
+          </div>
+          <span class="field-type">VARCHAR(20)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">created_at</span>
+          </div>
+          <span class="field-type">TIMESTAMP</span>
+        </div>
+        <div class="constraint-row">CHK: role ∈ {superadmin, verifier}</div>
+      </div>
+    </div>
+
+
+    <!-- TABLE: ROUTE -->
+    <div class="er-table table-route" style="left:760px; top:60px; width:260px;">
+      <div class="er-table-header">🗺️ ROUTE</div>
+      <div class="er-table-body">
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-pk">PK</span>
+            <span class="field-name pk">route_id</span>
+          </div>
+          <span class="field-type">SERIAL</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">source_station</span>
+          </div>
+          <span class="field-type">VARCHAR(100)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">destination_station</span>
+          </div>
+          <span class="field-type">VARCHAR(100)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">travel_class</span>
+          </div>
+          <span class="field-type">VARCHAR(10)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">transport_type</span>
+          </div>
+          <span class="field-type">VARCHAR(10)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">distance_km</span>
+          </div>
+          <span class="field-type">DECIMAL(6,2)</span>
+        </div>
+        <div class="constraint-row">CHK: class ∈ {first,second,ac} · type ∈ {railway,metro}</div>
+        <div class="constraint-row">UK: (source, destination, class, type)</div>
+      </div>
+    </div>
+
+
+    <!-- TABLE: CONCESSION -->
+    <div class="er-table table-concession" style="left:385px; top:290px; width:260px;">
+      <div class="er-table-header">🎫 CONCESSION</div>
+      <div class="er-table-body">
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-pk">PK</span>
+            <span class="field-name pk">concession_id</span>
+          </div>
+          <span class="field-type">SERIAL</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-fk">FK</span>
+            <span class="field-name fk">student_id</span>
+          </div>
+          <span class="field-type">INTEGER</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-fk">FK</span>
+            <span class="field-name fk">route_id</span>
+          </div>
+          <span class="field-type">INTEGER</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">concession_type</span>
+          </div>
+          <span class="field-type">VARCHAR(20)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">duration</span>
+          </div>
+          <span class="field-type">VARCHAR(10)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">issue_date</span>
+          </div>
+          <span class="field-type">DATE</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">expiry_date</span>
+          </div>
+          <span class="field-type">DATE</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">status</span>
+          </div>
+          <span class="field-type">VARCHAR(10)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">created_at</span>
+          </div>
+          <span class="field-type">TIMESTAMP</span>
+        </div>
+        <div class="constraint-row">CHK: expiry_date &gt; issue_date</div>
+        <div class="constraint-row">CHK: duration ∈ {1_month, 3_months}</div>
+        <div class="constraint-row">CHK: status ∈ {pending,active,expired,rejected}</div>
+        <div class="constraint-row">FK → student ON DELETE RESTRICT</div>
+        <div class="constraint-row">FK → route ON DELETE RESTRICT</div>
+      </div>
+    </div>
+
+
+    <!-- TABLE: DOCUMENT (concession-linked) -->
+    <div class="er-table table-document" style="left:385px; top:560px; width:270px;">
+      <div class="er-table-header">📋 DOCUMENT</div>
+      <div class="er-table-body">
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-pk">PK</span>
+            <span class="field-name pk">document_id</span>
+          </div>
+          <span class="field-type">SERIAL</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-fk">FK</span>
+            <span class="field-name fk">concession_id</span>
+          </div>
+          <span class="field-type">INTEGER</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">document_type</span>
+          </div>
+          <span class="field-type">VARCHAR(30)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">upload_date</span>
+          </div>
+          <span class="field-type">DATE</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">verification_status</span>
+          </div>
+          <span class="field-type">VARCHAR(15)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-fk">FK</span>
+            <span class="field-name fk">verified_by</span>
+          </div>
+          <span class="field-type">INTEGER → ADMIN</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">created_at</span>
+          </div>
+          <span class="field-type">TIMESTAMP</span>
+        </div>
+        <div class="constraint-row">CHK: type ∈ {aadhaar, address_proof, college_id}</div>
+        <div class="constraint-row">CHK: status ∈ {pending, verified, failed}</div>
+        <div class="constraint-row">FK → concession ON DELETE CASCADE</div>
+        <div class="constraint-row">FK → admin ON DELETE SET NULL</div>
+      </div>
+    </div>
+
+
+    <!-- TABLE: APPROVAL -->
+    <div class="er-table table-approval" style="left:750px; top:500px; width:260px;">
+      <div class="er-table-header">✅ APPROVAL</div>
+      <div class="er-table-body">
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-pk">PK</span>
+            <span class="field-name pk">approval_id</span>
+          </div>
+          <span class="field-type">SERIAL</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-fk">FK</span>
+            <span class="field-badge badge-uk" style="margin-left:2px">UK</span>
+            <span class="field-name fk">concession_id</span>
+          </div>
+          <span class="field-type">INTEGER</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-fk">FK</span>
+            <span class="field-name fk">approved_by</span>
+          </div>
+          <span class="field-type">INTEGER → ADMIN</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">approval_date</span>
+          </div>
+          <span class="field-type">TIMESTAMP</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">action</span>
+          </div>
+          <span class="field-type">VARCHAR(10)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">remarks</span>
+          </div>
+          <span class="field-type">TEXT</span>
+        </div>
+        <div class="constraint-row">CHK: action ∈ {approved, rejected, pending}</div>
+        <div class="constraint-row">UK: concession_id (enforces 1:1 with CONCESSION)</div>
+        <div class="constraint-row">FK → concession ON DELETE CASCADE</div>
+        <div class="constraint-row">FK → admin ON DELETE SET NULL</div>
+      </div>
+    </div>
+
+
+    <!-- TABLE: STUDENT_DOCUMENT -->
+    <div class="er-table table-student-doc" style="left:20px; top:700px; width:280px;">
+      <div class="er-table-header">📁 STUDENT_DOCUMENT</div>
+      <div class="er-table-body">
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-pk">PK</span>
+            <span class="field-name pk">doc_id</span>
+          </div>
+          <span class="field-type">SERIAL</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-fk">FK</span>
+            <span class="field-name fk">student_id</span>
+          </div>
+          <span class="field-type">INTEGER</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">document_type</span>
+          </div>
+          <span class="field-type">VARCHAR(30)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">file_path</span>
+          </div>
+          <span class="field-type">VARCHAR(500)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-nn">NN</span>
+            <span class="field-name">file_name</span>
+          </div>
+          <span class="field-type">VARCHAR(255)</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-name" style="color:#475569">upload_date</span>
+          </div>
+          <span class="field-type">TIMESTAMP</span>
+        </div>
+        <div class="er-field">
+          <div class="field-left">
+            <span class="field-badge badge-chk">CHK</span>
+            <span class="field-name">verification_status</span>
+          </div>
+          <span class="field-type">VARCHAR(15)</span>
+        </div>
+        <div class="constraint-row">CHK: type ∈ {aadhaar, address_proof, college_id}</div>
+        <div class="constraint-row">CHK: status ∈ {pending, verified, failed}</div>
+        <div class="constraint-row">FK → student ON DELETE CASCADE</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- RELATIONSHIPS TABLE -->
+<div class="cardinality-box">
+  <h3>Relationship Summary</h3>
+  <table class="rel-table">
+    <thead>
+      <tr>
+        <th>Parent Entity</th>
+        <th>Child Entity</th>
+        <th>Cardinality</th>
+        <th>FK Column</th>
+        <th>On Delete</th>
+        <th>Meaning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>STUDENT</strong></td>
+        <td><strong>CONCESSION</strong></td>
+        <td><span class="rel-type">1 : N</span></td>
+        <td>student_id</td>
+        <td>RESTRICT</td>
+        <td>One student can have many concession renewals over time</td>
+      </tr>
+      <tr>
+        <td><strong>ROUTE</strong></td>
+        <td><strong>CONCESSION</strong></td>
+        <td><span class="rel-type">1 : N</span></td>
+        <td>route_id</td>
+        <td>RESTRICT</td>
+        <td>Same route can be referenced by many different concessions</td>
+      </tr>
+      <tr>
+        <td><strong>CONCESSION</strong></td>
+        <td><strong>DOCUMENT</strong></td>
+        <td><span class="rel-type">1 : N</span></td>
+        <td>concession_id</td>
+        <td>CASCADE</td>
+        <td>Each concession application can have multiple supporting documents</td>
+      </tr>
+      <tr>
+        <td><strong>CONCESSION</strong></td>
+        <td><strong>APPROVAL</strong></td>
+        <td><span class="rel-type">1 : 1</span></td>
+        <td>concession_id (UK)</td>
+        <td>CASCADE</td>
+        <td>Each concession gets exactly one approval record (enforced by UNIQUE)</td>
+      </tr>
+      <tr>
+        <td><strong>ADMIN</strong></td>
+        <td><strong>APPROVAL</strong></td>
+        <td><span class="rel-type">1 : N</span></td>
+        <td>approved_by</td>
+        <td>SET NULL</td>
+        <td>One admin can approve or reject many concession applications</td>
+      </tr>
+      <tr>
+        <td><strong>ADMIN</strong></td>
+        <td><strong>DOCUMENT</strong></td>
+        <td><span class="rel-type">1 : N</span></td>
+        <td>verified_by</td>
+        <td>SET NULL</td>
+        <td>One admin can verify documents for many concession applications</td>
+      </tr>
+      <tr>
+        <td><strong>STUDENT</strong></td>
+        <td><strong>STUDENT_DOCUMENT</strong></td>
+        <td><span class="rel-type">1 : N</span></td>
+        <td>student_id</td>
+        <td>CASCADE</td>
+        <td>Each student uploads multiple registration documents (Aadhaar, Address Proof, College ID)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- DBMS CONCEPT CARDS -->
+<div class="dbms-row">
+  <div class="dbms-card">
+    <h4 style="color:#60a5fa">🔑 Normalization (3NF)</h4>
+    <ul>
+      <li>1NF: All columns atomic, no repeating groups</li>
+      <li>2NF: ROUTE extracted — no partial FK dependency in CONCESSION</li>
+      <li>3NF: No transitive dependencies across any table</li>
+      <li>Route data stored once, referenced by N concessions</li>
+      <li>Admin data not repeated in DOCUMENT or APPROVAL</li>
+    </ul>
+  </div>
+  <div class="dbms-card">
+    <h4 style="color:#34d399">🔄 Transactions (ACID)</h4>
+    <ul>
+      <li>Signup: BEGIN → INSERT student → INSERT student_document × N → COMMIT</li>
+      <li>Apply: BEGIN → UPSERT route → INSERT concession → INSERT document → INSERT approval → COMMIT</li>
+      <li>Admin action: BEGIN → UPDATE concession → UPDATE approval → UPDATE document → COMMIT</li>
+      <li>Any step fails → ROLLBACK (Atomicity guaranteed)</li>
+    </ul>
+  </div>
+  <div class="dbms-card">
+    <h4 style="color:#f0abfc">🛡️ Constraints</h4>
+    <ul>
+      <li>PRIMARY KEY on all *_id columns</li>
+      <li>UNIQUE on enrolment_no, email, concession_id in approval</li>
+      <li>NOT NULL on all mandatory fields</li>
+      <li>CHECK on status, duration, year, expiry > issue</li>
+      <li>FOREIGN KEY with ON DELETE RESTRICT / CASCADE / SET NULL</li>
+    </ul>
+  </div>
+  <div class="dbms-card">
+    <h4 style="color:#fbbf24">📊 Indexes</h4>
+    <ul>
+      <li>idx_concession_student_id — fast student history lookup</li>
+      <li>idx_concession_status — fast pending/active filter</li>
+      <li>idx_concession_expiry — fast expiry-based queries</li>
+      <li>idx_document_concession_id — fast document lookup</li>
+      <li>idx_approval_concession_id — fast approval lookup</li>
+      <li>idx_student_document_student_id — fast registration doc lookup</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  Digital Concession Management Portal · VJTI Mumbai · PostgreSQL 18 · 7 Tables · 6 Indexes
+</div>
+
+</body>
+</html>
