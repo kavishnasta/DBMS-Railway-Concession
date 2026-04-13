@@ -28,7 +28,8 @@ export const authAPI={
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   studentLogin: (data)=>api.post('/auth/student/login', data),
-  adminLogin: (data)=>api.post('/auth/admin/login', data)
+  adminLogin: (data)=>api.post('/auth/admin/login', data),
+  adminSignup: (data)=>api.post('/auth/admin/signup', data)
 };
 export const studentAPI={
   getProfile: ()=>api.get('/student/profile'),
