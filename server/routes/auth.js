@@ -200,7 +200,7 @@ router.post('/admin/signup', async (req, res)=>{
     }
     const passwordHash=await bcrypt.hash(password, 10);
     const result=await pool.query(
-      `INSERT INTO admin (name, email, password_hash, role) VALUES ($1, $2, $3, 'admin') RETURNING admin_id, name, email, role`,
+      `INSERT INTO admin (name, email, password_hash, role) VALUES ($1, $2, $3, 'verifier') RETURNING admin_id, name, email, role`,
       [name, email, passwordHash]
     );
     const admin=result.rows[0];
