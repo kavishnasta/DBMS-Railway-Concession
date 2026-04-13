@@ -43,7 +43,6 @@ export default function Signup() {
   function setFieldHint(field, value) {
     setHints(prev => ({ ...prev, [field]: value }));
   }
-
   function handleFileChange(e, field) {
     const file=e.target.files[0]||null;
     setFiles((prev)=>({ ...prev, [field]: file }));
