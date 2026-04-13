@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { concessionAPI } from '../../services/api.js';
 // Allowed source stations and which railway line they belong to
 // key is unique; name is the actual station name sent to the API
@@ -11,6 +12,7 @@ const SOURCE_STATIONS=[
 ];
 export default function ApplyRenew() {
   const [stations, setStations]=useState({ railway: {}, metro: {} });
+  const [existingConcession, setExistingConcession]=useState(null);
   const [form, setForm]=useState({
     transport_type: 'railway',
     source_key: '',
@@ -20,27 +22,30 @@ export default function ApplyRenew() {
     duration: '1_month'
   });
   const [loading, setLoading]=useState(false);
-  const [stationsLoading, setStationsLoading]=useState(true);
+  const [pageLoading, setPageLoading]=useState(true);
   const [success, setSuccess]=useState('');
   const [error, setError]=useState('');
   useEffect(()=>{
-    async function fetchStations() {
+    async function init() {
       try {
-        const res=await concessionAPI.getStations();
-        setStations(res.data);
+        const [stationsRes, historyRes]=await Promise.all([
+          concessionAPI.getStations(),
+          concessionAPI.getHistory()
+        ]);
+        setStations(stationsRes.data);
+        const active=historyRes.data.find(c=>c.status==='active'||c.status==='pending');
+        if (active) setExistingConcession(active);
       } catch {
-        setError('Failed to load stations.');
+        setError('Failed to load data.');
       } finally {
-        setStationsLoading(false);
+        setPageLoading(false);
       }
     }
-    fetchStations();
+    init();
   }, []);
-  // Determine which entry the selected source key corresponds to
   const selectedSourceMeta=useMemo(()=>{
     return SOURCE_STATIONS.find(s=>s.key===form.source_key)||null;
   }, [form.source_key]);
-  // Destination options: all stations on the source's line, excluding the source itself
   const destinationStations=useMemo(()=>{
     if (!selectedSourceMeta) return [];
     const lineObj=stations.railway[selectedSourceMeta.line];
@@ -66,6 +71,9 @@ export default function ApplyRenew() {
     try {
       const res=await concessionAPI.apply(form);
       setSuccess(`${res.data.message} (Concession ID: #${res.data.concession_id})`);
+      const historyRes=await concessionAPI.getHistory();
+      const active=historyRes.data.find(c=>c.status==='active'||c.status==='pending');
+      if (active) setExistingConcession(active);
       setForm({
         transport_type: 'railway',
         source_key: '',
@@ -80,10 +88,46 @@ export default function ApplyRenew() {
       setLoading(false);
     }
   }
-  if (stationsLoading) {
+  if (pageLoading) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
+      </div>
+    );
+  }
+  if (existingConcession) {
+    const statusLabel=existingConcession.status.charAt(0).toUpperCase()+existingConcession.status.slice(1);
+    return (
+      <div>
+        <div className="page-header">
+          <h1>Apply / Renew Concession</h1>
+          <p>Submit a new concession application for railway travel</p>
+        </div>
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">Concession Already Active</div>
+          </div>
+          <div style={{ padding: '1rem 0' }}>
+            <p style={{ marginBottom: '1rem' }}>
+              You already hold a <strong>{statusLabel}</strong> concession and cannot apply for another until it expires or is cancelled.
+            </p>
+            <div className="profile-field">
+              <span className="profile-field-label">Route</span>
+              <span className="profile-field-value">{existingConcession.source_station} &rarr; {existingConcession.destination_station}</span>
+            </div>
+            <div className="profile-field">
+              <span className="profile-field-label">Status</span>
+              <span className="profile-field-value"><span className={`badge badge-${existingConcession.status}`}>{existingConcession.status}</span></span>
+            </div>
+            <div className="profile-field">
+              <span className="profile-field-label">Expiry</span>
+              <span className="profile-field-value">{existingConcession.expiry_date ? new Date(existingConcession.expiry_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}</span>
+            </div>
+            <div style={{ marginTop: '1.5rem' }}>
+              <Link to="/student/history" className="btn btn-ghost">View concession history</Link>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
