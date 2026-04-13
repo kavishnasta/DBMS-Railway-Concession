@@ -14,6 +14,7 @@ import Profile from './pages/student/Profile.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 import VerifyApplications from './pages/admin/VerifyApplications.jsx';
 import Reports from './pages/admin/Reports.jsx';
+import AdminSignup from './pages/AdminSignup.jsx';
 export default function App() {
   return (
     <AuthProvider>
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/admin/signup" element={<AdminSignup />} />
         <Route path="/student" element={<ProtectedRoute role="student" />}>
           <Route element={<StudentLayout />}>
             <Route path="dashboard" element={<Dashboard />} />

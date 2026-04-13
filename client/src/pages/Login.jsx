@@ -122,6 +122,9 @@ export default function Login() {
             <button type="submit" className="btn btn-ink btn-lg btn-full" disabled={loading}>
               {loading ? 'Signing in...' : 'Log in as admin'}
             </button>
+            <p className="auth-alt">
+              No account? <Link to="/admin/signup">Create an admin account</Link>
+            </p>
           </form>
         )}
       </div>

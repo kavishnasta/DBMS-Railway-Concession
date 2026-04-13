@@ -188,4 +188,34 @@ router.post('/admin/login', async (req, res)=>{
     res.status(500).json({ error: 'Server error during admin login' });
   }
 });
+router.post('/admin/signup', async (req, res)=>{
+  const { name, email, password }=req.body;
+  if (!name||!email||!password) {
+    return res.status(400).json({ error: 'Name, email and password are required' });
+  }
+  try {
+    const existing=await pool.query('SELECT admin_id FROM admin WHERE email=$1', [email]);
+    if (existing.rows.length>0) {
+      return res.status(409).json({ error: 'An account with this email already exists' });
+    }
+    const passwordHash=await bcrypt.hash(password, 10);
+    const result=await pool.query(
+      `INSERT INTO admin (name, email, password_hash, role) VALUES ($1, $2, $3, 'admin') RETURNING admin_id, name, email, role`,
+      [name, email, passwordHash]
+    );
+    const admin=result.rows[0];
+    const token=jwt.sign(
+      { id: admin.admin_id, role: 'admin', name: admin.name },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    res.status(201).json({
+      token,
+      user: { id: admin.admin_id, name: admin.name, email: admin.email, role: 'admin', admin_role: admin.role }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error during admin signup' });
+  }
+});
 module.exports=router;
