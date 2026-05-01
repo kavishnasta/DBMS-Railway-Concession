@@ -52,6 +52,18 @@ CREATE TABLE IF NOT EXISTS concession (
   CONSTRAINT concession_status_check CHECK (status IN ('pending', 'active', 'expired', 'rejected')),
   CONSTRAINT concession_date_check CHECK (expiry_date > issue_date)
 );
+CREATE TABLE IF NOT EXISTS student_document (
+  doc_id SERIAL PRIMARY KEY,
+  student_id INTEGER NOT NULL,
+  document_type VARCHAR(30) NOT NULL,
+  file_path VARCHAR(500) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  verification_status VARCHAR(15) NOT NULL DEFAULT 'pending',
+  upload_date TIMESTAMP DEFAULT NOW(),
+  CONSTRAINT student_document_student_fk FOREIGN KEY (student_id) REFERENCES student(student_id) ON DELETE CASCADE,
+  CONSTRAINT student_document_type_check CHECK (document_type IN ('aadhaar', 'address_proof', 'college_id')),
+  CONSTRAINT student_document_status_check CHECK (verification_status IN ('pending', 'verified', 'failed'))
+);
 CREATE TABLE IF NOT EXISTS document (
   document_id SERIAL PRIMARY KEY,
   concession_id INTEGER NOT NULL,
