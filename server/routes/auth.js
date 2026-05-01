@@ -3,22 +3,8 @@ const router=express.Router();
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const multer=require('multer');
-const path=require('path');
-const fs=require('fs');
 const pool=require('../config/db');
-const storage=multer.diskStorage({
-  destination: (req, file, cb)=>{
-    const uploadDir=path.join(__dirname, '..', 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb)=>{
-    const uniqueSuffix=Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
+const { storage: cloudinaryStorage }=require('../config/cloudinary');
 const fileFilter=(req, file, cb)=>{
   const allowed=['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
   if (allowed.includes(file.mimetype)) {
@@ -28,7 +14,7 @@ const fileFilter=(req, file, cb)=>{
   }
 };
 const upload=multer({
-  storage,
+  storage: cloudinaryStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter
 });
@@ -88,7 +74,7 @@ router.post('/student/signup', runUpload(signupUpload), async (req, res)=>{
         await client.query(
           `INSERT INTO student_document (student_id, document_type, file_path, file_name)
            VALUES ($1, $2, $3, $4)`,
-          [student.student_id, doc.type, file.filename, file.originalname]
+          [student.student_id, doc.type, file.path, file.originalname]
         );
       }
     }
