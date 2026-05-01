@@ -67,30 +67,34 @@ export default function Dashboard() {
         </div>
       </div>
       {active_concession ? (
-        <div className="concession-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div className="pass-card">
+          <div className="pass-card-header">
             <div>
-              <div className="concession-card-label">Active Concession Pass</div>
-              <div className="concession-card-value" style={{ fontSize: '1.3rem' }}>
-                {active_concession.source_station} &rarr; {active_concession.destination_station}
+              <div className="pass-card-eyebrow">
+                {active_concession.transport_type === 'railway' ? (
+                  <svg viewBox="0 0 24 24" className="pass-card-icon"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" className="pass-card-icon"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                )}
+                {active_concession.transport_type.charAt(0).toUpperCase() + active_concession.transport_type.slice(1)} Concession Pass
+              </div>
+              <div className="pass-card-route">
+                {active_concession.source_station}
+                <svg viewBox="0 0 24 24" className="pass-route-arrow"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                {active_concession.destination_station}
               </div>
             </div>
-            <span className="badge" style={{ background: '#dbe6f3', color: '#3b6ba5', fontSize: '0.72rem' }}>
-              ACTIVE
-            </span>
+            <span className="badge badge-active">Active</span>
           </div>
+          <div className="pass-card-divider"></div>
           <div className="concession-card-grid">
-            <div>
-              <div className="concession-card-label">Transport Type</div>
-              <div className="concession-card-value">{active_concession.transport_type.charAt(0).toUpperCase() + active_concession.transport_type.slice(1)}</div>
-            </div>
             <div>
               <div className="concession-card-label">Travel Class</div>
               <div className="concession-card-value">{active_concession.travel_class.charAt(0).toUpperCase() + active_concession.travel_class.slice(1)} Class</div>
             </div>
             <div>
               <div className="concession-card-label">Duration</div>
-              <div className="concession-card-value">{active_concession.duration==='1_month' ? 'Monthly' : 'Quarterly'}</div>
+              <div className="concession-card-value">{active_concession.duration === '1_month' ? 'Monthly' : 'Quarterly'}</div>
             </div>
             <div>
               <div className="concession-card-label">Issue Date</div>
@@ -100,22 +104,23 @@ export default function Dashboard() {
               <div className="concession-card-label">Expiry Date</div>
               <div className="concession-card-value">{formatDate(active_concession.expiry_date)}</div>
             </div>
-            <div>
-              <div className="concession-card-label">Concession ID</div>
-              <div className="concession-card-value">#{active_concession.concession_id}</div>
-            </div>
+          </div>
+          <div className="pass-card-footer">
+            <span className="concession-card-label">Pass ID &nbsp;#</span>
+            <span className="pass-card-id">{active_concession.concession_id}</span>
           </div>
         </div>
       ) : (
         <div className="card">
-          <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-            <h3 style={{ color: '#111', marginBottom: '0.5rem' }}>No Active Concession</h3>
-            <p style={{ color: '#888', marginBottom: '1.25rem', fontSize: '0.875rem' }}>
-              Apply for your first railway or metro concession pass to get started.
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <svg viewBox="0 0 24 24" style={{ width: 40, height: 40, stroke: 'var(--ink-20)', fill: 'none', strokeWidth: 1.4, strokeLinecap: 'round', strokeLinejoin: 'round' }}><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            </div>
+            <div className="empty-state-text">No active concession pass</div>
+            <p style={{ fontSize: '0.82rem', color: 'var(--ink-40)', marginTop: '0.4rem', marginBottom: '1.25rem' }}>
+              Apply for a railway or metro concession to get started.
             </p>
-            <Link to="/student/apply" className="btn btn-primary">
-              Apply for Concession
-            </Link>
+            <Link to="/student/apply" className="btn btn-primary">Apply for Concession</Link>
           </div>
         </div>
       )}

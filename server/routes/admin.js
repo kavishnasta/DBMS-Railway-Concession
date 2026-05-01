@@ -1,7 +1,32 @@
 const express=require('express');
 const router=express.Router();
 const pool=require('../config/db');
+const https=require('https');
 const { verifyAdmin }=require('../middleware/auth');
+
+// Proxy a student document through the server so the browser receives it with
+// correct Content-Type headers regardless of Cloudinary delivery restrictions
+router.get('/documents/proxy', verifyAdmin, async (req, res)=>{
+  const { doc_id }=req.query;
+  if (!doc_id) return res.status(400).json({ error: 'doc_id required' });
+  try {
+    const result=await pool.query(
+      'SELECT file_path, file_name FROM student_document WHERE doc_id=$1',
+      [doc_id]
+    );
+    if (result.rows.length===0) return res.status(404).json({ error: 'Document not found' });
+    const { file_path, file_name }=result.rows[0];
+    const isPdf=file_name&&file_name.toLowerCase().endsWith('.pdf');
+    https.get(file_path, (stream)=>{
+      res.setHeader('Content-Type', isPdf ? 'application/pdf' : stream.headers['content-type']||'application/octet-stream');
+      res.setHeader('Content-Disposition', `inline; filename="${file_name}"`);
+      stream.pipe(res);
+    }).on('error', ()=>res.status(502).json({ error: 'Failed to fetch document' }));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 router.get('/dashboard', verifyAdmin, async (req, res)=>{
   try {
     const pendingResult=await pool.query(
@@ -45,7 +70,8 @@ router.get('/applications/pending', verifyAdmin, async (req, res)=>{
     const result=await pool.query(
       `SELECT c.concession_id, c.concession_type, c.duration, c.issue_date, c.expiry_date, c.status, c.created_at,
               s.name, s.enrolment_no, s.course, s.year, s.email,
-              r.source_station, r.destination_station, r.travel_class, r.transport_type
+              r.source_station, r.destination_station, r.travel_class, r.transport_type,
+              (SELECT COUNT(*) FROM student_document sd WHERE sd.student_id=s.student_id) AS doc_count
        FROM concession c
        JOIN student s ON c.student_id=s.student_id
        JOIN route r ON c.route_id=r.route_id
