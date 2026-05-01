@@ -109,28 +109,50 @@ function DetailModal({ concessionId, onClose, onAction }) {
             </div>
             {detail.student_documents&&detail.student_documents.length > 0&&(
               <div className="modal-section">
-                <div className="modal-section-title">Registration Documents</div>
-                {detail.student_documents.map(doc=>(
-                  <div key={doc.doc_id} className="modal-detail modal-detail-doc">
-                    <span className="modal-detail-label modal-detail-label-cap">
-                      {doc.document_type.replace(/_/g, ' ')}
-                    </span>
-                    <span className="modal-detail-value modal-detail-doc-value">
-                      <span className={`badge badge-${doc.verification_status==='verified' ? 'active' : doc.verification_status==='failed' ? 'rejected' : 'pending'}`}>
-                        {doc.verification_status}
-                      </span>
-                      <a
-                        href={doc.file_path}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="modal-doc-link"
-                        title={doc.file_name}
-                      >
-                        View file
-                      </a>
-                    </span>
-                  </div>
-                ))}
+                <div className="modal-section-title">Student Documents</div>
+                <div className="doc-review-grid">
+                  {detail.student_documents.map(doc=>{
+                    const isPdf=doc.file_name&&doc.file_name.toLowerCase().endsWith('.pdf');
+                    const openUrl=isPdf
+                      ? `/api/admin/documents/proxy?doc_id=${doc.doc_id}`
+                      : doc.file_path;
+                    const label=doc.document_type==='aadhaar' ? 'Aadhaar Card'
+                      : doc.document_type==='address_proof' ? 'Address Proof'
+                      : doc.document_type==='college_id' ? 'College ID'
+                      : doc.document_type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+                    return (
+                      <div key={doc.doc_id} className="doc-review-card">
+                        <div className="doc-review-preview">
+                          {isPdf ? (
+                            <div className="doc-review-pdf-thumb">
+                              <svg viewBox="0 0 24 24" className="doc-thumb-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                              <span>PDF</span>
+                            </div>
+                          ) : (
+                            <img src={doc.file_path} alt={label} className="doc-review-img" />
+                          )}
+                        </div>
+                        <div className="doc-review-meta">
+                          <div className="doc-review-label">{label}</div>
+                          <div className="doc-review-filename">{doc.file_name}</div>
+                          <div className="doc-review-actions">
+                            <span className={`badge badge-${doc.verification_status==='verified'?'active':doc.verification_status==='failed'?'rejected':'pending'}`}>
+                              {doc.verification_status}
+                            </span>
+                            <a
+                              href={doc.file_path}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn btn-ghost btn-sm"
+                            >
+                              Open &rarr;
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
             {detail.documents&&detail.documents.length > 0&&(
@@ -286,6 +308,7 @@ export default function VerifyApplications() {
                   <th>Route</th>
                   <th>Duration</th>
                   <th>Type</th>
+                  <th>Docs</th>
                   <th>Applied</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -309,6 +332,16 @@ export default function VerifyApplications() {
                       <span className={`badge badge-${app.transport_type}`}>
                         {app.transport_type==='railway' ? 'Railway' : 'Metro'}
                       </span>
+                    </td>
+                    <td>
+                      {parseInt(app.doc_count) > 0 ? (
+                        <span className="doc-count-badge" title={`${app.doc_count} document(s) uploaded`}>
+                          <svg viewBox="0 0 24 24" className="doc-count-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                          {app.doc_count}
+                        </span>
+                      ) : (
+                        <span className="doc-count-none">None</span>
+                      )}
                     </td>
                     <td>{formatDate(app.created_at)}</td>
                     <td><span className={`badge badge-${app.status}`}>{app.status}</span></td>

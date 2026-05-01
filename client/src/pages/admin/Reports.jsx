@@ -47,26 +47,38 @@ export default function Reports() {
         <p>Insights into concession usage and trends</p>
       </div>
       <div className="metrics-grid">
-        <div className="metric-card">
-          <div className="metric-tag mono">N&deg; 01</div>
+        <div className="metric-card metric-card--ink">
+          <div className="metric-icon-row">
+            <svg viewBox="0 0 24 24" className="metric-icon-svg"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span className="metric-icon-label">All Types</span>
+          </div>
           <div className="metric-value">{totalConcessions}</div>
           <div className="metric-label">Total Concessions</div>
           <div className="metric-sub">From top routes</div>
         </div>
-        <div className="metric-card">
-          <div className="metric-tag mono">N&deg; 02</div>
+        <div className="metric-card metric-card--amber">
+          <div className="metric-icon-row">
+            <svg viewBox="0 0 24 24" className="metric-icon-svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span className="metric-icon-label">Railway</span>
+          </div>
           <div className="metric-value">{totalRailway}</div>
           <div className="metric-label">Railway Passes</div>
           <div className="metric-sub">From top routes</div>
         </div>
-        <div className="metric-card">
-          <div className="metric-tag mono">N&deg; 03</div>
+        <div className="metric-card metric-card--blue">
+          <div className="metric-icon-row">
+            <svg viewBox="0 0 24 24" className="metric-icon-svg"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span className="metric-icon-label">Metro</span>
+          </div>
           <div className="metric-value">{totalMetro}</div>
           <div className="metric-label">Metro Passes</div>
           <div className="metric-sub">From top routes</div>
         </div>
-        <div className="metric-card">
-          <div className="metric-tag mono">N&deg; 04</div>
+        <div className="metric-card metric-card--green">
+          <div className="metric-icon-row">
+            <svg viewBox="0 0 24 24" className="metric-icon-svg"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span className="metric-icon-label">History</span>
+          </div>
           <div className="metric-value">{concessions_by_month.length}</div>
           <div className="metric-label">Months Tracked</div>
           <div className="metric-sub">Last 6 months</div>

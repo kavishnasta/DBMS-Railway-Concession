@@ -1317,6 +1317,261 @@ tbody td strong { color: var(--ink); font-weight: 600; }
   min-width: 44px;
   text-align: right;
 }
+/* ============================================
+   METRIC CARD COLOR VARIANTS
+   ============================================ */
+.metric-card--amber::before { background: #c28828; }
+.metric-card--green::before { background: var(--sage); }
+.metric-card--blue::before { background: #3a5a7a; }
+.metric-card--ink::before { background: var(--ink); }
+
+.metric-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+.metric-icon-svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--ink-40);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.metric-card--amber .metric-icon-svg { stroke: #c28828; }
+.metric-card--green .metric-icon-svg { stroke: var(--sage); }
+.metric-card--blue .metric-icon-svg { stroke: #3a5a7a; }
+.metric-card--ink .metric-icon-svg { stroke: var(--ink); }
+
+.metric-icon-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-40);
+}
+.metric-card--amber .metric-icon-label { color: #c28828; }
+.metric-card--green .metric-icon-label { color: var(--sage); }
+.metric-card--blue .metric-icon-label { color: #3a5a7a; }
+
+/* ============================================
+   CONCESSION PASS CARD (student dashboard)
+   ============================================ */
+.pass-card {
+  background: linear-gradient(135deg, #1a2332 0%, #2a3a52 100%);
+  color: var(--bg);
+  padding: 2rem;
+  margin-bottom: 1.25rem;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.pass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(242,237,225,0.05) 1px, transparent 1.2px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+.pass-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.pass-card-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(242,237,225,0.5);
+  margin-bottom: 0.6rem;
+}
+.pass-card-icon {
+  width: 14px;
+  height: 14px;
+  stroke: rgba(242,237,225,0.5);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.pass-card-route {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  letter-spacing: -0.02em;
+  flex-wrap: wrap;
+}
+.pass-route-arrow {
+  width: 20px;
+  height: 20px;
+  stroke: rgba(242,237,225,0.4);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.pass-card-divider {
+  border: none;
+  border-top: 1px dashed rgba(242,237,225,0.18);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.pass-card .concession-card-label {
+  color: rgba(242,237,225,0.45);
+}
+.pass-card .concession-card-value {
+  color: var(--bg);
+}
+.pass-card .concession-card-grid {
+  border-top: none;
+  padding-top: 0;
+}
+.pass-card-footer {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(242,237,225,0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  position: relative;
+}
+.pass-card-id {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: rgba(242,237,225,0.6);
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   DOCUMENT REVIEW (admin modal)
+   ============================================ */
+.doc-review-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.doc-review-card {
+  display: flex;
+  gap: 1rem;
+  border: 1.5px solid var(--rule-strong);
+  background: var(--bg);
+  padding: 0.85rem;
+  align-items: flex-start;
+}
+.doc-review-preview {
+  flex-shrink: 0;
+  width: 80px;
+  height: 70px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--bg-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.doc-review-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.doc-review-pdf-thumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: var(--rust-dark);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.doc-thumb-icon {
+  width: 28px;
+  height: 28px;
+  stroke: var(--rust-dark);
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.doc-review-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.doc-review-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.doc-review-filename {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--ink-40);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.doc-review-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+
+/* Doc count badge in pending table */
+.doc-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #3d4f26;
+  background: #e6ecd6;
+  border: 1px solid #3d4f26;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+}
+.doc-count-icon {
+  width: 12px;
+  height: 12px;
+  stroke: #3d4f26;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.doc-count-none {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--ink-40);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 /* profile doc name + upload */
 .profile-doc-name {
   font-size: 0.78rem;

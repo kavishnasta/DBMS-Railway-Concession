@@ -108,7 +108,7 @@ export default function ApplyRenew() {
     );
   }
   if (existingConcession) {
-    const isPending=existingConcession.blockReason==='pending';
+    const statusLabel=existingConcession.blockReason==='pending' ? 'pending' : 'active';
     return (
       <div>
         <div className="page-header">
@@ -117,7 +117,7 @@ export default function ApplyRenew() {
         </div>
         <div className="card">
           <div className="card-header">
-            <div className="card-title">Concession Already Active</div>
+            <div className="card-title">Concession Already {statusLabel==='pending' ? 'Pending' : 'Active'}</div>
           </div>
           <div style={{ padding: '1rem 0' }}>
             <p style={{ marginBottom: '1rem' }}>
