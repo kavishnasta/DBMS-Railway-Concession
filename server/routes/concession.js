@@ -30,14 +30,30 @@ router.post('/apply', verifyStudent, async (req, res)=>{
       );
       routeId=newRoute.rows[0].route_id;
     }
+    // Block if student has a pending concession (no buffer applies to pending)
+    const pendingConcession=await client.query(
+      `SELECT concession_id FROM concession WHERE student_id=$1 AND status='pending'`,
+      [req.user.id]
+    );
+    if (pendingConcession.rows.length>0) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ error: 'You already have a pending concession awaiting approval.' });
+    }
+    // Block if student has an active concession that does not expire within 3 days
     const activeConcession=await client.query(
-      `SELECT concession_id FROM concession
-       WHERE student_id=$1 AND status IN ('active','pending')`,
+      `SELECT concession_id, expiry_date FROM concession WHERE student_id=$1 AND status='active'`,
       [req.user.id]
     );
     if (activeConcession.rows.length>0) {
-      await client.query('ROLLBACK');
-      return res.status(409).json({ error: 'You already have an active or pending concession. You cannot hold more than one at a time.' });
+      const expiry=new Date(activeConcession.rows[0].expiry_date);
+      const today=new Date();
+      today.setHours(0,0,0,0);
+      expiry.setHours(0,0,0,0);
+      const daysLeft=Math.ceil((expiry - today)/(1000*60*60*24));
+      if (daysLeft>3) {
+        await client.query('ROLLBACK');
+        return res.status(409).json({ error: `Your current concession is still active and expires in ${daysLeft} day${daysLeft===1?'':'s'}. You can apply for a renewal within 3 days of expiry.` });
+      }
     }
     const issueDate=new Date();
     const expiryDate=new Date(issueDate);
@@ -46,16 +62,10 @@ router.post('/apply', verifyStudent, async (req, res)=>{
     } else {
       expiryDate.setMonth(expiryDate.getMonth() + 3);
     }
-    const historyCount=await client.query(
-      'SELECT COUNT(*) as count FROM concession WHERE student_id=$1',
-      [req.user.id]
-    );
-    const hasHistory=parseInt(historyCount.rows[0].count) > 0;
-    const concessionStatus=hasHistory ? 'active' : 'pending';
     const concessionResult=await client.query(
       `INSERT INTO concession (student_id, route_id, concession_type, duration, issue_date, expiry_date, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING concession_id`,
-      [req.user.id, routeId, transport_type, duration, issueDate.toISOString().split('T')[0], expiryDate.toISOString().split('T')[0], concessionStatus]
+       VALUES ($1, $2, $3, $4, $5, $6, 'pending') RETURNING concession_id`,
+      [req.user.id, routeId, transport_type, duration, issueDate.toISOString().split('T')[0], expiryDate.toISOString().split('T')[0]]
     );
     const concessionId=concessionResult.rows[0].concession_id;
     await client.query(
@@ -63,24 +73,15 @@ router.post('/apply', verifyStudent, async (req, res)=>{
        VALUES ($1, 'college_id', 'pending')`,
       [concessionId]
     );
-    if (hasHistory) {
-      await client.query(
-        `INSERT INTO approval (concession_id, action, remarks)
-         VALUES ($1, 'approved', 'Auto-approved based on previous concession history')`,
-        [concessionId]
-      );
-    } else {
-      await client.query(
-        `INSERT INTO approval (concession_id, action)
-         VALUES ($1, 'pending')`,
-        [concessionId]
-      );
-    }
+    await client.query(
+      `INSERT INTO approval (concession_id, action) VALUES ($1, 'pending')`,
+      [concessionId]
+    );
     await client.query('COMMIT');
     res.status(201).json({
-      message: hasHistory ? 'Concession auto-approved based on history' : 'Concession application submitted and pending review',
+      message: 'Concession application submitted and pending review',
       concession_id: concessionId,
-      status: concessionStatus
+      status: 'pending'
     });
   } catch (err) {
     await client.query('ROLLBACK');
@@ -94,9 +95,11 @@ router.get('/history', verifyStudent, async (req, res)=>{
   try {
     const result=await pool.query(
       `SELECT c.concession_id, c.concession_type, c.duration, c.issue_date, c.expiry_date, c.status, c.created_at,
-              r.source_station, r.destination_station, r.travel_class, r.transport_type
+              r.source_station, r.destination_station, r.travel_class, r.transport_type,
+              ap.remarks, ap.action as approval_action
        FROM concession c
        JOIN route r ON c.route_id=r.route_id
+       LEFT JOIN approval ap ON ap.concession_id=c.concession_id
        WHERE c.student_id=$1
        ORDER BY c.created_at DESC`,
       [req.user.id]

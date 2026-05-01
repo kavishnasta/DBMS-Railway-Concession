@@ -33,8 +33,20 @@ export default function ApplyRenew() {
           concessionAPI.getHistory()
         ]);
         setStations(stationsRes.data);
-        const active=historyRes.data.find(c=>c.status==='active'||c.status==='pending');
-        if (active) setExistingConcession(active);
+        const pending=historyRes.data.find(c=>c.status==='pending');
+        if (pending) {
+          setExistingConcession({ ...pending, blockReason: 'pending' });
+        } else {
+          const active=historyRes.data.find(c=>c.status==='active');
+          if (active) {
+            const expiry=new Date(active.expiry_date);
+            const today=new Date();
+            today.setHours(0,0,0,0);
+            expiry.setHours(0,0,0,0);
+            const daysLeft=Math.ceil((expiry - today)/(1000*60*60*24));
+            if (daysLeft>3) setExistingConcession({ ...active, blockReason: 'active', daysLeft });
+          }
+        }
       } catch {
         setError('Failed to load data.');
       } finally {
@@ -72,8 +84,8 @@ export default function ApplyRenew() {
       const res=await concessionAPI.apply(form);
       setSuccess(`${res.data.message} (Concession ID: #${res.data.concession_id})`);
       const historyRes=await concessionAPI.getHistory();
-      const active=historyRes.data.find(c=>c.status==='active'||c.status==='pending');
-      if (active) setExistingConcession(active);
+      const pending=historyRes.data.find(c=>c.status==='pending');
+      if (pending) setExistingConcession({ ...pending, blockReason: 'pending' });
       setForm({
         transport_type: 'railway',
         source_key: '',
@@ -96,7 +108,7 @@ export default function ApplyRenew() {
     );
   }
   if (existingConcession) {
-    const statusLabel=existingConcession.status.charAt(0).toUpperCase()+existingConcession.status.slice(1);
+    const isPending=existingConcession.blockReason==='pending';
     return (
       <div>
         <div className="page-header">
