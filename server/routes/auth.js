@@ -37,7 +37,18 @@ const signupUpload=upload.fields([
   { name: 'address_proof', maxCount: 1 },
   { name: 'college_id_doc', maxCount: 1 }
 ]);
-router.post('/student/signup', signupUpload, async (req, res)=>{
+function runUpload(middleware) {
+  return (req, res, next)=>{
+    middleware(req, res, (err)=>{
+      if (err&&err.code==='LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'File too large. Maximum allowed size is 5MB per file.' });
+      }
+      if (err) return res.status(400).json({ error: err.message||'File upload error.' });
+      next();
+    });
+  };
+}
+router.post('/student/signup', runUpload(signupUpload), async (req, res)=>{
   const { name, enrolment_no, course, year, email, password, phone, address, aadhaar }=req.body;
   if (!name||!enrolment_no||!course||!year||!email||!password) {
     return res.status(400).json({ error: 'Name, enrolment number, course, year, email and password are required' });

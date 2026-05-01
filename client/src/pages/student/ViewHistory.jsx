@@ -85,6 +85,7 @@ export default function ViewHistory() {
                   <th>Issue Date</th>
                   <th>Expiry Date</th>
                   <th>Status</th>
+                  <th>Remarks</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,6 +103,7 @@ export default function ViewHistory() {
                     <td>{formatDate(c.issue_date)}</td>
                     <td>{formatDate(c.expiry_date)}</td>
                     <td><span className={`badge badge-${c.status}`}>{c.status}</span></td>
+                    <td>{c.remarks ? c.remarks : <span style={{ color: 'var(--ink-40)' }}>—</span>}</td>
                   </tr>
                 ))}
               </tbody>

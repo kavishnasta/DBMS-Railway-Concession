@@ -24,6 +24,17 @@ const upload=multer({
     cb(null, allowed.includes(file.mimetype));
   }
 });
+function runUpload(middleware) {
+  return (req, res, next)=>{
+    middleware(req, res, (err)=>{
+      if (err&&err.code==='LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'File too large. Maximum allowed size is 5MB.' });
+      }
+      if (err) return res.status(400).json({ error: err.message||'File upload error.' });
+      next();
+    });
+  };
+}
 router.get('/profile', verifyStudent, async (req, res)=>{
   try {
     const result=await pool.query(
@@ -91,7 +102,7 @@ router.get('/documents', verifyStudent, async (req, res)=>{
     res.status(500).json({ error: 'Server error' });
   }
 });
-router.post('/documents/address-proof', verifyStudent, upload.single('address_proof'), async (req, res)=>{
+router.post('/documents/address-proof', verifyStudent, runUpload(upload.single('address_proof')), async (req, res)=>{
   if (!req.file) {
     return res.status(400).json({ error: 'Address proof file is required' });
   }
