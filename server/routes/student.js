@@ -2,22 +2,10 @@ const express=require('express');
 const router=express.Router();
 const pool=require('../config/db');
 const multer=require('multer');
-const path=require('path');
-const fs=require('fs');
 const { verifyStudent }=require('../middleware/auth');
-const storage=multer.diskStorage({
-  destination: (req, file, cb)=>{
-    const uploadDir=path.join(__dirname, '..', 'uploads');
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb)=>{
-    const uniqueSuffix=Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
+const { storage: cloudinaryStorage }=require('../config/cloudinary');
 const upload=multer({
-  storage,
+  storage: cloudinaryStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb)=>{
     const allowed=['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
@@ -114,12 +102,12 @@ router.post('/documents/address-proof', verifyStudent, runUpload(upload.single('
     if (existing.rows.length > 0) {
       await pool.query(
         'UPDATE student_document SET file_path=$1, file_name=$2, verification_status=$3, upload_date=NOW() WHERE doc_id=$4',
-        [req.file.filename, req.file.originalname, 'pending', existing.rows[0].doc_id]
+        [req.file.path, req.file.originalname, 'pending', existing.rows[0].doc_id]
       );
     } else {
       await pool.query(
         'INSERT INTO student_document (student_id, document_type, file_path, file_name) VALUES ($1, $2, $3, $4)',
-        [req.user.id, 'address_proof', req.file.filename, req.file.originalname]
+        [req.user.id, 'address_proof', req.file.path, req.file.originalname]
       );
     }
     res.json({ message: 'Address proof updated successfully. It will be re-verified by the admin.' });

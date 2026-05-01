@@ -120,7 +120,7 @@ function DetailModal({ concessionId, onClose, onAction }) {
                         {doc.verification_status}
                       </span>
                       <a
-                        href={`/uploads/${doc.file_path}`}
+                        href={doc.file_path}
                         target="_blank"
                         rel="noreferrer"
                         className="modal-doc-link"
