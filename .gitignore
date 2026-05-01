@@ -19,3 +19,4 @@ Thumbs.db
 *.swo
 coverage/
 .nyc_output/
+server/uploads/
