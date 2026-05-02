@@ -7,6 +7,23 @@ export default function Reports() {
   const [data, setData]=useState(null);
   const [loading, setLoading]=useState(true);
   const [error, setError]=useState('');
+  const [downloading, setDownloading]=useState(false);
+  async function handleDownloadPDF() {
+    setDownloading(true);
+    try {
+      const res=await adminAPI.downloadReportPDF();
+      const url=window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const a=document.createElement('a');
+      a.href=url;
+      a.download=`vjti-concession-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Failed to generate PDF report. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  }
   useEffect(()=>{
     async function fetchReports() {
       try {
@@ -42,9 +59,22 @@ export default function Reports() {
   }));
   return (
     <div>
-      <div className="page-header">
-        <h1>Reports & Analytics</h1>
-        <p>Insights into concession usage and trends</p>
+      <div className="page-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1>Reports & Analytics</h1>
+          <p>Insights into concession usage and trends</p>
+        </div>
+        <button
+          className="btn btn-primary"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', whiteSpace: 'nowrap' }}
+          onClick={handleDownloadPDF}
+          disabled={downloading}
+        >
+          <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, stroke: 'currentColor', fill: 'none', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }}>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          {downloading ? 'Generating...' : 'Download PDF Report'}
+        </button>
       </div>
       <div className="metrics-grid">
         <div className="metric-card metric-card--ink">
