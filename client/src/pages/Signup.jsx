@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { authAPI } from '../services/api.js';
@@ -22,7 +22,12 @@ export default function Signup() {
   const fileRefs={ aadhaar_doc: useRef(), address_proof: useRef(), college_id_doc: useRef() };
   const { login }=useAuth();
   const navigate=useNavigate();
-
+  const cardRef = useRef(null);
+  useEffect(() => {
+    if (error) {
+      cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [error]);
   function handleChange(e) {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
@@ -77,7 +82,7 @@ export default function Signup() {
     if (!emailRegex.test(value)) {
       setHints('Enter a valid email address');
     } else if (!value.endsWith('.vjti.ac.in')) {
-      setHints('Must be a @vjti.ac.in email');
+      setHints('Must be a .vjti.ac.in email');
     } else {
       setHints('');
     }
@@ -186,13 +191,16 @@ export default function Signup() {
       login(res.data.token, res.data.user);
       navigate('/student/dashboard');
     } catch (err) {
+      console.log('status:', err.response?.status);
+      console.log('data:', err.response?.data);
+      console.log('full error:', err);
       setError(err.response?.data?.error||'Signup failed. Please try again.');
     } finally {
       setLoading(false);
     }
   }
   return (
-    <div className="auth-page">
+    <div className="auth-page" ref={cardRef}>
       <div className="signup-card">
         <Link to="/" className="auth-back">&larr; Home</Link>
         <img src="/vjti-logo.png" alt="VJTI" className="auth-logo" />
@@ -301,12 +309,12 @@ export default function Signup() {
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Password <sup>*</sup></label>
-              <input type="password" name="password" className="form-input" placeholder="Create a strong password" value={form.password} onChange={handleChange} required />
+              <input type="password" name="password" autoComplete="new-password" className="form-input" placeholder="Create a strong password" value={form.password} onChange={handleChange} required />
               <div className={hintClass(hints.password)}>{hints.password}</div>
             </div>
             <div className="form-group">
               <label className="form-label">Confirm <sup>*</sup></label>
-              <input type="password" name="confirm_password" className="form-input" placeholder="Re-enter password" value={form.confirm_password} onChange={handleChange} required />
+              <input type="password" name="confirm_password" autoComplete="off" className="form-input" placeholder="Re-enter password" value={form.confirm_password} onChange={handleChange} required />
               <div className={hintClass(hints.confirm_password)}>{hints.confirm_password}</div>
             </div>
           </div>
