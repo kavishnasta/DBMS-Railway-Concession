@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { studentAPI } from '../../services/api.js';
+import { studentAPI, concessionAPI } from '../../services/api.js';
 function formatDate(dateStr) {
   if (!dateStr) return 'N/A';
   return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -8,10 +8,28 @@ function formatDate(dateStr) {
 function StatusBadge({ status }) {
   return <span className={`badge badge-${status||'pending'}`}>{status||'N/A'}</span>;
 }
+async function downloadBlob(res, filename) {
+  const url=window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+  const a=document.createElement('a');
+  a.href=url; a.download=filename; a.click();
+  window.URL.revokeObjectURL(url);
+}
 export default function Dashboard() {
   const [data, setData]=useState(null);
   const [loading, setLoading]=useState(true);
   const [error, setError]=useState('');
+  const [downloading, setDownloading]=useState(false);
+  async function handleDownloadReceipt(concessionId) {
+    setDownloading(true);
+    try {
+      const res=await concessionAPI.downloadReceipt(concessionId);
+      await downloadBlob(res, `concession-receipt-${concessionId}.pdf`);
+    } catch {
+      alert('Failed to download receipt. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  }
   useEffect(()=>{
     async function fetchDashboard() {
       try {
@@ -105,9 +123,22 @@ export default function Dashboard() {
               <div className="concession-card-value">{formatDate(active_concession.expiry_date)}</div>
             </div>
           </div>
-          <div className="pass-card-footer">
-            <span className="concession-card-label">Pass ID &nbsp;#</span>
-            <span className="pass-card-id">{active_concession.concession_id}</span>
+          <div className="pass-card-footer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <span className="concession-card-label">Pass ID &nbsp;#</span>
+              <span className="pass-card-id">{active_concession.concession_id}</span>
+            </div>
+            <button
+              className="btn btn-secondary"
+              style={{ fontSize: '0.78rem', padding: '0.35rem 0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+              onClick={()=>handleDownloadReceipt(active_concession.concession_id)}
+              disabled={downloading}
+            >
+              <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }}>
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              {downloading ? 'Downloading...' : 'Download Receipt'}
+            </button>
           </div>
         </div>
       ) : (

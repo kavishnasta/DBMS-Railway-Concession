@@ -35,6 +35,11 @@ export default function Profile() {
     if (!file) return;
     setUploadErr('');
     setUploadMsg('');
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadErr(`File too large — max 5MB (this file is ${(file.size/1024/1024).toFixed(1)}MB)`);
+      if (fileRef.current) fileRef.current.value='';
+      return;
+    }
     setUploading(true);
     const formData=new FormData();
     formData.append('address_proof', file);
