@@ -1,7 +1,7 @@
 import axios from 'axios';
 const api=axios.create({
   baseURL: '/api',
-  timeout: 10000
+  timeout: 30000
 });
 api.interceptors.request.use((config)=>{
   const token=localStorage.getItem('token');
@@ -25,7 +25,8 @@ api.interceptors.response.use(
 );
 export const authAPI={
   studentSignup: (formData)=>api.post('/auth/student/signup', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000
   }),
   studentLogin: (data)=>api.post('/auth/student/login', data),
   adminLogin: (data)=>api.post('/auth/admin/login', data),
@@ -36,7 +37,8 @@ export const studentAPI={
   getDashboard: ()=>api.get('/student/dashboard'),
   getDocuments: ()=>api.get('/student/documents'),
   updateAddressProof: (formData)=>api.post('/student/documents/address-proof', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000
   })
 };
 export const concessionAPI={
