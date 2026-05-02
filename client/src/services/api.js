@@ -42,12 +42,14 @@ export const studentAPI={
 export const concessionAPI={
   getStations: ()=>api.get('/concessions/stations'),
   apply: (data)=>api.post('/concessions/apply', data),
-  getHistory: ()=>api.get('/concessions/history')
+  getHistory: ()=>api.get('/concessions/history'),
+  downloadReceipt: (id)=>api.get(`/concessions/receipt/${id}`, { responseType: 'blob' })
 };
 export const adminAPI={
   getDashboard: ()=>api.get('/admin/dashboard'),
   getPendingApplications: ()=>api.get('/admin/applications/pending'),
   getApplicationDetail: (id)=>api.get(`/admin/applications/${id}`),
   takeAction: (id, data)=>api.patch(`/admin/applications/${id}/action`, data),
-  getReports: ()=>api.get('/admin/reports')
+  getReports: ()=>api.get('/admin/reports'),
+  downloadReportPDF: ()=>api.get('/admin/reports/pdf', { responseType: 'blob' })
 };
