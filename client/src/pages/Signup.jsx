@@ -14,6 +14,7 @@ export default function Signup() {
     password: '', confirm_password: ''
   });
   const [files, setFiles]=useState({ aadhaar_doc: null, address_proof: null, college_id_doc: null });
+  const [fileErrors, setFileErrors]=useState({ aadhaar_doc: '', address_proof: '', college_id_doc: '' });
   const [error, setError]=useState('');
   const [loading, setLoading]=useState(false);
   const [hints, setHints] = useState({
@@ -43,12 +44,20 @@ export default function Signup() {
   function setFieldHint(field, value) {
     setHints(prev => ({ ...prev, [field]: value }));
   }
+  const MAX_FILE_SIZE=5 * 1024 * 1024;
   function handleFileChange(e, field) {
     const file=e.target.files[0]||null;
+    if (file && file.size > MAX_FILE_SIZE) {
+      setFileErrors((prev)=>({ ...prev, [field]: `File too large — max 5MB (this file is ${(file.size/1024/1024).toFixed(1)}MB)` }));
+      e.target.value='';
+      return;
+    }
+    setFileErrors((prev)=>({ ...prev, [field]: '' }));
     setFiles((prev)=>({ ...prev, [field]: file }));
   }
   function removeFile(field) {
     setFiles((prev)=>({ ...prev, [field]: null }));
+    setFileErrors((prev)=>({ ...prev, [field]: '' }));
     if (fileRefs[field].current) fileRefs[field].current.value='';
   }
   // ─── Validation stubs ────────────────────────────────────────────────────────
@@ -295,6 +304,9 @@ export default function Signup() {
                 style={{ display: 'none' }}
                 onChange={(e)=>handleFileChange(e, doc.field)}
               />
+              {fileErrors[doc.field] && (
+                <div className="hint error" style={{ marginTop: '0.4rem' }}>{fileErrors[doc.field]}</div>
+              )}
             </div>
           ))}
           <h3 className="form-section-title">Password</h3>
