@@ -199,10 +199,7 @@ export default function Signup() {
       const res=await authAPI.studentSignup(formData);
       login(res.data.token, res.data.user);
       navigate('/student/dashboard');
-    } catch (err) {
-      console.log('status:', err.response?.status);
-      console.log('data:', err.response?.data);
-      console.log('full error:', err);
+    } catch (err) {     
       setError(err.response?.data?.error||'Signup failed. Please try again.');
     } finally {
       setLoading(false);
