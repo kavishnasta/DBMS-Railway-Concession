@@ -35,7 +35,7 @@ export default function Landing() {
       {/* ---- HERO ---- */}
       <section className="hero">
         <div className="container hero-center">
-          <img src="/vjti-logo.png" alt="VJTI Seal" className="hero-logo" />
+          <img src="/vjti-logo-transparent.png" alt="VJTI Seal" className="hero-logo" />
           <h1 className="display">
             Railway concession passes,<br />
             <em>without the paperwork.</em>
