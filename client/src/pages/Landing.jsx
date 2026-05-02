@@ -19,14 +19,14 @@ export default function Landing() {
             {isAuthenticated ? (
               <Link
                 to={user?.role==='admin' ? '/admin/dashboard' : '/student/dashboard'}
-                className="btn btn-ink"
+                className="btn btn-ticket btn-ticket-dark"
               >
                 Dashboard
               </Link>
             ) : (
               <>
                 <Link to="/login" className="nav-link">Log in</Link>
-                <Link to="/signup" className="btn btn-ink">Register</Link>
+                <Link to="/signup" className="btn btn-ticket btn-ticket-dark">Sign Up</Link>
               </>
             )}
           </div>
@@ -44,8 +44,8 @@ export default function Landing() {
             Apply and renew your season ticket concession online — for VJTI students.
           </p>
           <div className="hero-cta">
-            <Link to="/signup" className="btn btn-ink btn-lg">Create an account</Link>
-            <Link to="/login" className="btn btn-ghost btn-lg">I already have one</Link>
+            <Link to="/signup" className="btn btn-ticket btn-ticket-dark">Sign Up</Link>
+            <Link to="/login" className="btn btn-ticket">Log In</Link>
           </div>
         </div>
       </section>
@@ -124,9 +124,9 @@ export default function Landing() {
             <h2 className="display-sm">Ready to apply?<br /><em>It takes 2 minutes.</em></h2>
             <p style={{ marginTop: '0.5rem' }}>Create your account and submit your first application today.</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <Link to="/signup" className="btn btn-cream btn-lg">Create account</Link>
-            <Link to="/login" className="btn btn-ghost btn-lg" style={{ borderColor: 'rgba(242,237,225,0.35)', color: 'var(--bg)' }}>Log in</Link>
+          <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+            <Link to="/signup" className="btn btn-ticket">Sign Up</Link>
+            <Link to="/login" className="btn btn-ticket btn-ticket-outline">Log In</Link>
           </div>
         </div>
       </section>
